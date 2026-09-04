@@ -9,35 +9,35 @@ media queries swap width and height.
 
 ## iPhone
 
-| Points | DPR | Devices |
-| :-- | :-- | :-- |
-| 320 × 568 | 2 | SE (1st gen), 5/5s/5c |
-| 375 × 667 | 2 | 6s, 7, 8, SE 2, SE 3 |
-| 414 × 736 | 3 | 6s Plus, 7 Plus, 8 Plus |
-| 375 × 812 | 3 | X, XS, 11 Pro, 12 mini, 13 mini |
-| 414 × 896 | 2 | XR, 11 |
-| 414 × 896 | 3 | XS Max, 11 Pro Max |
-| 390 × 844 | 3 | 12, 12 Pro, 13, 13 Pro, 14, 16e, 17e |
-| 428 × 926 | 3 | 12 Pro Max, 13 Pro Max, 14 Plus |
-| 393 × 852 | 3 | 14 Pro, 15, 15 Pro, 16 |
-| 430 × 932 | 3 | 14 Pro Max, 15 Plus, 15 Pro Max, 16 Plus |
-| 402 × 874 | 3 | 16 Pro, 17, 17 Pro |
-| 440 × 956 | 3 | 16 Pro Max, 17 Pro Max |
-| 420 × 912 | 3 | iPhone Air |
+| Points    | DPR | Devices                                  |
+| :-------- | :-- | :--------------------------------------- |
+| 320 × 568 | 2   | SE (1st gen), 5/5s/5c                    |
+| 375 × 667 | 2   | 6s, 7, 8, SE 2, SE 3                     |
+| 414 × 736 | 3   | 6s Plus, 7 Plus, 8 Plus                  |
+| 375 × 812 | 3   | X, XS, 11 Pro, 12 mini, 13 mini          |
+| 414 × 896 | 2   | XR, 11                                   |
+| 414 × 896 | 3   | XS Max, 11 Pro Max                       |
+| 390 × 844 | 3   | 12, 12 Pro, 13, 13 Pro, 14, 16e, 17e     |
+| 428 × 926 | 3   | 12 Pro Max, 13 Pro Max, 14 Plus          |
+| 393 × 852 | 3   | 14 Pro, 15, 15 Pro, 16                   |
+| 430 × 932 | 3   | 14 Pro Max, 15 Plus, 15 Pro Max, 16 Plus |
+| 402 × 874 | 3   | 16 Pro, 17, 17 Pro                       |
+| 440 × 956 | 3   | 16 Pro Max, 17 Pro Max                   |
+| 420 × 912 | 3   | iPhone Air                               |
 
 ## iPad
 
-| Points | DPR | Devices |
-| :-- | :-- | :-- |
-| 768 × 1024 | 2 | iPad 3–6, iPad mini 2–5, iPad Air 1–2, iPad Pro 9.7" (iPad 1–2 and mini 1 are @1) |
-| 810 × 1080 | 2 | iPad 7, 8, 9 |
-| 820 × 1180 | 2 | iPad 10, iPad 11, iPad Air 4–8 (11") |
-| 744 × 1133 | 2 | iPad mini 6, mini 7 |
-| 834 × 1112 | 2 | iPad Pro 10.5", iPad Air 3 |
-| 834 × 1194 | 2 | iPad Pro 11" gen 1–4 (2018–2022) |
-| 834 × 1210 | 2 | iPad Pro 11" gen 5–6 (M4, M5) |
-| 1024 × 1366 | 2 | iPad Pro 12.9" (all gens), iPad Air 13" |
-| 1032 × 1376 | 2 | iPad Pro 13" (M4, M5) |
+| Points      | DPR | Devices                                                                           |
+| :---------- | :-- | :-------------------------------------------------------------------------------- |
+| 768 × 1024  | 2   | iPad 3–6, iPad mini 2–5, iPad Air 1–2, iPad Pro 9.7" (iPad 1–2 and mini 1 are @1) |
+| 810 × 1080  | 2   | iPad 7, 8, 9                                                                      |
+| 820 × 1180  | 2   | iPad 10, iPad 11, iPad Air 4–8 (11")                                              |
+| 744 × 1133  | 2   | iPad mini 6, mini 7                                                               |
+| 834 × 1112  | 2   | iPad Pro 10.5", iPad Air 3                                                        |
+| 834 × 1194  | 2   | iPad Pro 11" gen 1–4 (2018–2022)                                                  |
+| 834 × 1210  | 2   | iPad Pro 11" gen 5–6 (M4, M5)                                                     |
+| 1024 × 1366 | 2   | iPad Pro 12.9" (all gens), iPad Air 13"                                           |
+| 1032 × 1376 | 2   | iPad Pro 13" (M4, M5)                                                             |
 
 ## Unique triples
 

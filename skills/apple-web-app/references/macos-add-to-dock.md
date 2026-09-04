@@ -10,20 +10,20 @@ Per-app settings live in the web app's own Settings: name, URL, icon,
 
 ## Manifest members on macOS
 
-| Member | Effect |
-| :-- | :-- |
-| `name` | App name in the Dock, menu bar and Launchpad |
-| `short_name` | Parsed, but Apple documents only `name` for the label on macOS — treat any use as unverified |
-| `display` | `standalone` and `fullscreen` both hide the toolbar; `minimal-ui`, `browser` or no manifest show one |
-| `start_url` | Loaded on launch |
-| `scope` | Decides in-app vs external navigation; defaults to the origin of the page used to create the app |
-| `id` | Distinguishes several apps on one origin; used for Focus-mode sync; falls back to `start_url` |
-| `icons` | The Dock/Launchpad icon — see below |
-| `theme_color` | See "Title bar colour" below |
+| Member             | Effect                                                                                                             |
+| :----------------- | :----------------------------------------------------------------------------------------------------------------- |
+| `name`             | App name in the Dock, menu bar and Launchpad                                                                       |
+| `short_name`       | Parsed, but Apple documents only `name` for the label on macOS — treat any use as unverified                       |
+| `display`          | `standalone` and `fullscreen` both hide the toolbar; `minimal-ui`, `browser` or no manifest show one               |
+| `start_url`        | Loaded on launch                                                                                                   |
+| `scope`            | Decides in-app vs external navigation; defaults to the origin of the page used to create the app                   |
+| `id`               | Distinguishes several apps on one origin; used for Focus-mode sync; falls back to `start_url`                      |
+| `icons`            | The Dock/Launchpad icon — see below                                                                                |
+| `theme_color`      | See "Title bar colour" below                                                                                       |
 | `background_color` | Reported to drive the title bar on Sonoma (Otto, 2023); on 26.6.2 the title bar reads `<body>` instead — see below |
-| `shortcuts` | File-menu and Dock-menu commands (Safari 17.4+) |
-| `categories` | Launchpad folder naming (Safari 17.4+) |
-| `orientation` | Not applicable |
+| `shortcuts`        | File-menu and Dock-menu commands (Safari 17.4+)                                                                    |
+| `categories`       | Launchpad folder naming (Safari 17.4+)                                                                             |
+| `orientation`      | Not applicable                                                                                                     |
 
 Source: WWDC23 session 10120; Thomas Steiner; Mark Otto; WebKit blog 17.4.
 
@@ -159,7 +159,7 @@ a Dock app. A `minimal-ui` app matches its own display-mode query.
 ## Debugging
 
 Enable Safari → Settings → Advanced → "Show features for web developers", then
-use Develop → *your Mac* → *your web app* to attach Web Inspector to a running
+use Develop → _your Mac_ → _your web app_ to attach Web Inspector to a running
 Dock app. Source: devtoolstips.org.
 
 ## Nothing to do on macOS
@@ -184,12 +184,12 @@ them for a Mac-only target:
 
 ## Version timeline
 
-| Version | Change |
-| :-- | :-- |
-| Safari 17 / Sonoma 14 (2023-09) | Add to Dock introduced; manifest optional; `display-mode` bug fixed in beta 3 |
-| Safari 17.4 (2024-03) | `shortcuts` and `categories` honoured on macOS |
-| Safari 18 / Sequoia (2024-09) | External in-scope link capturing; extensions and content blockers in web apps |
-| Safari 26 / Tahoe (2025-09) | No web-app changes in the release notes; Liquid Glass tinting affects Safari's own chrome; Dock icons not glassed |
+| Version                         | Change                                                                                                            |
+| :------------------------------ | :---------------------------------------------------------------------------------------------------------------- |
+| Safari 17 / Sonoma 14 (2023-09) | Add to Dock introduced; manifest optional; `display-mode` bug fixed in beta 3                                     |
+| Safari 17.4 (2024-03)           | `shortcuts` and `categories` honoured on macOS                                                                    |
+| Safari 18 / Sequoia (2024-09)   | External in-scope link capturing; extensions and content blockers in web apps                                     |
+| Safari 26 / Tahoe (2025-09)     | No web-app changes in the release notes; Liquid Glass tinting affects Safari's own chrome; Dock icons not glassed |
 
 Source: WebKit blog 17.0, 17.4, 18.0; Safari release notes 18.0 and 26.0–26.6.
 

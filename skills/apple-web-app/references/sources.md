@@ -145,7 +145,7 @@ documentation; thresholds are approximate.
   (2025-09-18)** —
   https://danielpietzsch.com/articles/how-to-create-a-blurry-status-bar-for-pwas-on-ios
   — the blurred status-bar strip via `body::before { position: fixed;
-  height: env(safe-area-inset-top); backdrop-filter; mask }`.
+height: env(safe-area-inset-top); backdrop-filter; mask }`.
 
 ## macOS web apps
 

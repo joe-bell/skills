@@ -15,16 +15,19 @@ Conventions for agents editing this skills repository.
 Before every commit, run:
 
 ```sh
+npx prettier@3 --check .
 npx skill-check@1.2.0 check ./skills --no-security-scan --strict
 ```
+
+Fix formatting with `npx prettier@3 --write .`. Code fences are left as
+written (`embeddedLanguageFormatting: off` in `.prettierrc`).
 
 - A skill body must stay within 500 lines and 5,000 words.
 - Every local reference link must resolve. Do not use `#anchor` targets.
 
 ## Style
 
-- Hand-wrap prose at roughly 80 columns; this repository does not use
-  Prettier.
+- Wrap prose at roughly 80 columns; Prettier normalises the rest.
 - Keep skill bodies to plain HTML, CSS and DOM unless a skill explicitly
   concerns a particular tool.
 - Give every external rule a `Source:` tail and an entry in

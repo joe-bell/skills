@@ -100,7 +100,7 @@ element.focus({ preventScroll: true });
 
 Then scroll it into view yourself once `--visual-viewport-height` reflects the
 keyboard. Letting the browser do it produces a scrolled-and-clipped layout,
-because the browser scrolls the *layout* viewport.
+because the browser scrolls the _layout_ viewport.
 
 ## 8. Fullscreen takeovers
 

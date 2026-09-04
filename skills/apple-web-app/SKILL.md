@@ -15,7 +15,7 @@ metadata:
 How an installed web app **looks and feels** on Apple platforms — chrome,
 safe areas, splash, icons, touch, navigation. iOS and iPadOS come first: they ignore half
 the manifest and need a parallel `apple-*` meta layer. macOS "Add to Dock" is section
-12, mostly a list of what does *not* apply there. Android honours the manifest and needs
+12, mostly a list of what does _not_ apply there. Android honours the manifest and needs
 none of this. Plain HTML, CSS and DOM; Tailwind v4 equivalents are an optional reference.
 
 **Non-goals:** service workers, offline caching, background sync, push,
@@ -139,11 +139,11 @@ Rules:
 
 `apple-mobile-web-app-status-bar-style` values:
 
-| Value | Bar | Content under bar | `env(safe-area-inset-top)` |
-| :-- | :-- | :-- | :-- |
-| `default` | white/system | no | `0px` |
-| `black` | black | no | `0px` |
-| `black-translucent` | transparent | **yes** | real inset |
+| Value               | Bar          | Content under bar | `env(safe-area-inset-top)` |
+| :------------------ | :----------- | :---------------- | :------------------------- |
+| `default`           | white/system | no                | `0px`                      |
+| `black`             | black        | no                | `0px`                      |
+| `black-translucent` | transparent  | **yes**           | real inset                 |
 
 `black-translucent` is the only edge-to-edge mode; it also puts the clock over
 your content, so safe areas stop being optional.
@@ -221,7 +221,7 @@ Rules:
   sticky bars, blurs and overlays.
 - The home indicator auto-hides on iOS 26, but `env(safe-area-inset-bottom)`
   still reports its space — keep padding bottom bars.
-- A translucent bar needs a translucent surface *and* a blur behind it,
+- A translucent bar needs a translucent surface _and_ a blur behind it,
   otherwise content shows through crisply as it scrolls under. A progressive
   blur (stacked `backdrop-filter` layers with mask gradients) reads far more
   "native" than one flat blur; in standalone make it noticeably taller, because
@@ -264,7 +264,7 @@ if (!standalone) {
 
 ## 7. Overlays, modals, keyboard
 
-iOS 26 clips `position: fixed` to the *inner* viewport, so full-screen
+iOS 26 clips `position: fixed` to the _inner_ viewport, so full-screen
 backdrops no longer cover the page. The working pattern (from React Spectrum):
 
 - Backdrop: `position: absolute`, sized to
@@ -388,8 +388,8 @@ const isStandalone =
 `navigator.standalone` is the iOS-only legacy flag (undefined on macOS); in CSS
 use `@media (display-mode: standalone)`. Source: community skills, see sources.md.
 
-- iOS has **no** `beforeinstallprompt`. Installing means Share → *Add to Home
-  Screen*, so any "install" affordance is a hint, not a prompt.
+- iOS has **no** `beforeinstallprompt`. Installing means Share → _Add to Home
+  Screen_, so any "install" affordance is a hint, not a prompt.
 - Only show that hint when not already standalone, after some engagement
   (second visit or a real interaction), and never again once dismissed. Target
   Safari specifically: in-app browsers can't install at all, and Chrome/Firefox
@@ -407,7 +407,7 @@ use `@media (display-mode: standalone)`. Source: community skills, see sources.m
   works once the app has built in-app history (source: fozzedout), and
   out-of-scope links open an in-app browser with a Done button rather than
   leaving the app (source: Firtman, since iOS 12.2). On macOS `display:
-  standalone` hides Back/Forward too — use `minimal-ui` if the site relies on
+standalone` hides Back/Forward too — use `minimal-ui` if the site relies on
   browser navigation (source: Steiner).
 
 Snippet and copy suggestions: [install-ux.md](references/install-ux.md).
@@ -456,7 +456,7 @@ Full detail, the version timeline and remaining questions:
 - Test on a **real device** — the simulator does not reproduce safe-area timing,
   status-bar sampling or splash selection — add it to home screen, kill it and
   cold-launch it; most bugs appear after a swipe-up kill. Source: Joe Bell.
-- Check portrait *and* landscape, a notched device *and* one without, and an
+- Check portrait _and_ landscape, a notched device _and_ one without, and an
   iPad in both windowed and full-screen mode.
 - Open a modal and focus a text field; check light and dark mode and the status-bar tint in both.
 - View source: confirm **both** capable metas and startup-image links = unique triples × 2;
@@ -467,14 +467,14 @@ Full detail, the version timeline and remaining questions:
 
 ## 14. Gotchas by iOS version
 
-| Version | Behaviour | Mitigation |
-| :-- | :-- | :-- |
-| ≤ 11.2 / 11.3 | ≤ 11.2: No manifest support; `apple-*` metas only (`user-scalable=no` ignored in Safari since 10, still honoured in standalone); 11.3: Manifest + `env(safe-area-inset-*)` land | Keep the apple layer; baseline for `viewport-fit=cover` |
-| 15 | `theme-color` respected in Safari UI | Still emit it for other browsers |
-| 26.0 | `fixed` clipped to inner viewport; opaque fixed overlays don't fill; `100dvh` gap; theme-color sampling replaces the meta; any site can open as a web app | Absolute backdrops, `opacity: .99`, `100vh` |
-| 26.1 | Status bar opaque in standalone and `env(safe-area-inset-top)` → `0px` (WebKit 301994); `100dvh` gap fixed | Layout must be correct at inset `0px` |
-| 26.2 | Status bar regression fixed — then **re-regressed on 26.5.2 and the iOS 27 beta** (301994 reopened); WebKit 259770 still open; 26.6 verified transparent (Joe Bell) | Never hardcode a version workaround; feature-detect |
-| iPadOS 26 | Home-screen apps open as resizable windows; system controls overlay the top-left and `env()` stays silent; no Window Controls Overlay | Keep chrome out of that corner; test windowed *and* full screen |
+| Version       | Behaviour                                                                                                                                                                       | Mitigation                                                      |
+| :------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :-------------------------------------------------------------- |
+| ≤ 11.2 / 11.3 | ≤ 11.2: No manifest support; `apple-*` metas only (`user-scalable=no` ignored in Safari since 10, still honoured in standalone); 11.3: Manifest + `env(safe-area-inset-*)` land | Keep the apple layer; baseline for `viewport-fit=cover`         |
+| 15            | `theme-color` respected in Safari UI                                                                                                                                            | Still emit it for other browsers                                |
+| 26.0          | `fixed` clipped to inner viewport; opaque fixed overlays don't fill; `100dvh` gap; theme-color sampling replaces the meta; any site can open as a web app                       | Absolute backdrops, `opacity: .99`, `100vh`                     |
+| 26.1          | Status bar opaque in standalone and `env(safe-area-inset-top)` → `0px` (WebKit 301994); `100dvh` gap fixed                                                                      | Layout must be correct at inset `0px`                           |
+| 26.2          | Status bar regression fixed — then **re-regressed on 26.5.2 and the iOS 27 beta** (301994 reopened); WebKit 259770 still open; 26.6 verified transparent (Joe Bell)             | Never hardcode a version workaround; feature-detect             |
+| iPadOS 26     | Home-screen apps open as resizable windows; system controls overlay the top-left and `env()` stays silent; no Window Controls Overlay                                           | Keep chrome out of that corner; test windowed _and_ full screen |
 
 Full matrix with sources: [ios-26-notes.md](references/ios-26-notes.md). The
 macOS timeline is in [macos-add-to-dock.md](references/macos-add-to-dock.md).

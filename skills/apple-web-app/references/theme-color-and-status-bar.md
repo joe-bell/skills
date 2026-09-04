@@ -5,11 +5,11 @@
 Only applies in standalone (home-screen) mode, and only when
 `apple-mobile-web-app-capable` is `yes`.
 
-| Value | Bar appearance | Page draws under it | `env(safe-area-inset-top)` |
-| :-- | :-- | :-- | :-- |
-| `default` (or absent) | Opaque, system/white | No | `0px` |
-| `black` | Opaque black | No | `0px` |
-| `black-translucent` | Transparent; clock over your page | **Yes** | Real inset |
+| Value                 | Bar appearance                    | Page draws under it | `env(safe-area-inset-top)` |
+| :-------------------- | :-------------------------------- | :------------------ | :------------------------- |
+| `default` (or absent) | Opaque, system/white              | No                  | `0px`                      |
+| `black`               | Opaque black                      | No                  | `0px`                      |
+| `black-translucent`   | Transparent; clock over your page | **Yes**             | Real inset                 |
 
 `black-translucent` is the only "fullscreen" option — and the name is
 misleading: it does not make the bar black, it removes it and hands you the

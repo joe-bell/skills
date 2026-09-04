@@ -39,10 +39,10 @@ entries, swap them: a 393×852 device gets a portrait entry with
 Image pixel dimensions = CSS points × device pixel ratio.
 
 | Device (points) | DPR | Portrait image | Landscape image |
-| :-- | :-- | :-- | :-- |
-| 393 × 852 | 3 | 1179 × 2556 | 2556 × 1179 |
-| 402 × 874 | 3 | 1206 × 2622 | 2622 × 1206 |
-| 820 × 1180 | 2 | 1640 × 2360 | 2360 × 1640 |
+| :-------------- | :-- | :------------- | :-------------- |
+| 393 × 852       | 3   | 1179 × 2556    | 2556 × 1179     |
+| 402 × 874       | 3   | 1206 × 2622    | 2622 × 1206     |
+| 820 × 1180      | 2   | 1640 × 2360    | 2360 × 1640     |
 
 Get this wrong and iOS either rejects the image or stretches it.
 
@@ -116,9 +116,9 @@ iOS caches startup images extremely aggressively, per home-screen entry.
   easily 100 links for ~44 unique sizes. Deduplicate by `width × height @ dpr`
   before emitting.
 - Landscape entries double the count; that part is unavoidable.
-- New devices need a new row *and* a cache-bust bump, or existing installs keep
+- New devices need a new row _and_ a cache-bust bump, or existing installs keep
   the old set.
 - Splash images are unrelated to the manifest — Android uses `background_color`
-  + icon + `name` instead, and needs none of this.
+  - icon + `name` instead, and needs none of this.
 
 Device sizes: [ios-devices.md](ios-devices.md). Credits: [sources.md](sources.md).

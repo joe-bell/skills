@@ -14,7 +14,7 @@ per-site "Open as Web App" toggle in the Share sheet / site settings that the
 user can turn off. So you get standalone mode more often than before — but the
 user can also opt out of it, and your layout has to survive both.
 
-`beforeinstallprompt` does not exist on iOS. Anything you show is a *hint*
+`beforeinstallprompt` does not exist on iOS. Anything you show is a _hint_
 pointing at the Share sheet, not a button that installs.
 
 ## Gating rules
@@ -82,7 +82,7 @@ than describing it.
 - **A standalone app has its own cookie and storage jar,** but Safari copies
   the site's cookies into it **once** at install (verified on iOS 26.6 by Joe
   Bell; also reported by fozzedout) — a user signed in in Safari launches the
-  installed app signed *in*, and the jars diverge from there. Other storage
+  installed app signed _in_, and the jars diverge from there. Other storage
   (localStorage, IndexedDB) is not copied. Keep auth in cookies.
 - iOS evicts standalone app state, and suspended apps get killed. Persist
   anything worth keeping (scroll position, draft input, filter state) to
@@ -104,9 +104,10 @@ that differ from iOS:
   is wrong here.
 
 Source: WebKit blog 17.0 and 18.0; Apple Support 104996.
+
 - **External links never open the installed app on iOS** — there is no
   deep-link association, so a link from Mail or Messages opens Safari.
-  `scope` only decides whether navigations *inside* the app stay in the app
+  `scope` only decides whether navigations _inside_ the app stay in the app
   or hand off to the in-app browser. Source: Firtman (behaviour since
   iOS 12.2).
 

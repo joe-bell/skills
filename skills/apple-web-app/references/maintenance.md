@@ -19,7 +19,8 @@
 - The Open questions list in [macos-add-to-dock.md](macos-add-to-dock.md) and
   the Later releases list in [ios-26-notes.md](ios-26-notes.md) are the work
   queue.
-- Keep `SKILL.md` at ≤ 500 lines / 5,000 words and hand-wrap around 80 columns.
+- Keep `SKILL.md` at ≤ 500 lines / 5,000 words, wrapped around 80 columns;
+  the upstream repo runs Prettier (code fences excluded).
 - Keep instructions plain HTML, CSS and DOM only. Tailwind belongs in
   [tailwind-css-v4.md](tailwind-css-v4.md).
 
