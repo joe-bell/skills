@@ -26,6 +26,10 @@ Format: **Author — Title (date) — URL** — what this skill took from it.
   stays in the app. Second run the same day: the title-bar snapshot reads
   `<body>` background, not manifest `background_color`; the Apps view and
   Spotlight show the same flat icon as the Dock.
+- **Joe Bell — a production Tailwind v4 app (2025, private)** — the Tailwind
+  v4 reference's spellings come from the same production app.
+- **Tailwind CSS — v4 documentation (`@utility`, `@custom-variant`, `--value()`)** —
+  https://tailwindcss.com/docs — syntax for the Tailwind v4 reference.
 
 ## iOS PWA behaviour
 
@@ -55,6 +59,9 @@ Format: **Author — Title (date) — URL** — what this skill took from it.
 
 ## Apple / WebKit
 
+- **WebKit blog — "Updates to Storage Policy" (2023)** —
+  https://webkit.org/blog/14403/updates-to-storage-policy/ — storage is
+  best-effort and can be evicted.
 - **WebKit blog — "News from WWDC25: Web technology coming this fall"
   (2025-06)** — https://webkit.org/blog/16993/ — iOS 26 web app behaviour and
   the Home Screen changes.

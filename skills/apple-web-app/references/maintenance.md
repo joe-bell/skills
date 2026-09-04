@@ -3,8 +3,9 @@
 ## 0. Porting
 
 - Copy the whole directory, including `references/`, and keep its relative links.
-- Recreate the host tool's discovery link instead of copying the symlink; this
-  repo uses `.claude/skills/apple-web-app`, a relative symlink.
+- Recreate the host tool's discovery link (for example Claude Code reads
+  `.claude/skills/<name>`; a relative symlink to the copied folder works) rather
+  than copying any symlink.
 - `metadata.upstream` is the public copy, published manually.
 
 ## 1. Conventions
@@ -38,8 +39,9 @@
 
 1. Read the affected section, its reference, the relevant work queue and
    `sources.md`; then amend them in place.
-2. Run `pnpm lint:skills` and
-   `wc -l -w .agents/skills/apple-web-app/SKILL.md`.
+2. Run the validation commands from the repository's AGENTS.md
+   (`npx prettier@3 --check .` and `npx skill-check@1.2.0 check ./skills --no-security-scan --strict`,
+   or the host repo's equivalents) and `wc -l -w` on `SKILL.md`.
 3. Commit with a message naming the finding and the tested OS/Safari build.
 
 ## 4. Upstreaming

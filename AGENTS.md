@@ -47,6 +47,6 @@ written (`embeddedLanguageFormatting: off` in `.prettierrc`).
 1. Copy its complete folder into `skills/`.
 2. Add a Reference bullet to the README: `[**name**](./skills/name/SKILL.md) — <Gerund> …`,
    one clause, no full stop.
-3. Run the validation command above and commit the change.
+3. Run the validation commands above and commit the change.
 
 `CLAUDE.md` contains `@AGENTS.md`; keep this file as the one source of truth.

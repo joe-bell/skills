@@ -27,17 +27,17 @@ media queries swap width and height.
 
 ## iPad
 
-| Points      | DPR | Devices                                                                           |
-| :---------- | :-- | :-------------------------------------------------------------------------------- |
-| 768 × 1024  | 2   | iPad 3–6, iPad mini 2–5, iPad Air 1–2, iPad Pro 9.7" (iPad 1–2 and mini 1 are @1) |
-| 810 × 1080  | 2   | iPad 7, 8, 9                                                                      |
-| 820 × 1180  | 2   | iPad 10, iPad 11, iPad Air 4–8 (11")                                              |
-| 744 × 1133  | 2   | iPad mini 6, mini 7                                                               |
-| 834 × 1112  | 2   | iPad Pro 10.5", iPad Air 3                                                        |
-| 834 × 1194  | 2   | iPad Pro 11" gen 1–4 (2018–2022)                                                  |
-| 834 × 1210  | 2   | iPad Pro 11" gen 5–6 (M4, M5)                                                     |
-| 1024 × 1366 | 2   | iPad Pro 12.9" (all gens), iPad Air 13"                                           |
-| 1032 × 1376 | 2   | iPad Pro 13" (M4, M5)                                                             |
+| Points      | DPR | Devices                                              |
+| :---------- | :-- | :--------------------------------------------------- |
+| 768 × 1024  | 2   | iPad 3–6, iPad mini 2–5, iPad Air 1–2, iPad Pro 9.7" |
+| 810 × 1080  | 2   | iPad 7, 8, 9                                         |
+| 820 × 1180  | 2   | iPad 10, iPad 11, iPad Air 4–8 (11")                 |
+| 744 × 1133  | 2   | iPad mini 6, mini 7                                  |
+| 834 × 1112  | 2   | iPad Pro 10.5", iPad Air 3                           |
+| 834 × 1194  | 2   | iPad Pro 11" gen 1–4 (2018–2022)                     |
+| 834 × 1210  | 2   | iPad Pro 11" gen 5–6 (M4, M5)                        |
+| 1024 × 1366 | 2   | iPad Pro 12.9" (all gens), iPad Air 13"              |
+| 1032 × 1376 | 2   | iPad Pro 13" (M4, M5)                                |
 
 ## Unique triples
 

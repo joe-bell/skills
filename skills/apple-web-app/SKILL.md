@@ -5,7 +5,7 @@ metadata:
   source: hand-maintained by Joe Bell; derived from a production home-screen web app plus credited external sources
   reviewed: "2026-09-04 against iOS 26.x, macOS 26 / Safari 26"
   upstream: "https://github.com/joe-bell/skills/tree/main/skills/apple-web-app"
-  version: "2026-09-04.1"
+  version: "2026-09-04.2"
 ---
 
 # Apple web app UI (iOS home screen and macOS Dock)
@@ -74,7 +74,7 @@ Derived from Joe Bell's production experience; external rules carry their own so
 
 Rules:
 
-- **The `apple-` prefixed capable tag is still required.** The spec-standard
+- **The `apple-` prefixed capable tag is still required.** The unprefixed
   `mobile-web-app-capable` does not enable startup images; Safari only shows
   them when `apple-mobile-web-app-capable` is present. Frameworks that emit
   only the standard tag will silently kill your splash screens — check the
@@ -301,9 +301,10 @@ recipes: [overlays-and-keyboard.md](references/overlays-and-keyboard.md).
   falls back to a screenshot of the page. Source: Joe Bell.
 - iOS caches icons per home-screen entry: after changing one you must remove
   and re-add the app to see the new artwork.
-- macOS reads the **manifest** icons (not `apple-touch-icon`), prefers an SVG
-  with `sizes: any` when present, accepts WebP, and wants 512 and 1024.
-  Source: Apple Developer Forums 738535.
+- macOS reads the **manifest** icons (not `apple-touch-icon`), accepts PNG,
+  WebP and SVG; ship opaque PNGs at 512 and 1024 (an SVG listed first was not
+  chosen on Safari 26.6.2). Source: Apple Developer Forums 738535; Joe Bell
+  (verified 26.6.2).
 
 ## 9. Splash / startup images
 
@@ -400,15 +401,17 @@ use `@media (display-mode: standalone)`. Source: community skills, see sources.m
   in; nothing else (localStorage, IndexedDB) copies, and jars diverge after.
   Keep auth in cookies. Source: Joe Bell (verified iOS 26.6); WWDC23 for the
   macOS half.
-- iOS aggressively evicts standalone app state. Persist anything you'd hate to
-  lose to `localStorage` and restore on launch. Source: Firtman.
+- iOS kills suspended standalone apps freely, so hold nothing important only in
+  memory: persist drafts and positions to `localStorage` and restore on launch.
+  Storage itself is best-effort on iOS — keep anything irreplaceable on the
+  server. Source: Firtman; WebKit storage policy.
 - **Standalone has no browser chrome, so there is no Back button.** Every
   screen needs its own way back or out. The iOS edge-swipe back gesture only
   works once the app has built in-app history (source: fozzedout), and
   out-of-scope links open an in-app browser with a Done button rather than
-  leaving the app (source: Firtman, since iOS 12.2). On macOS `display:
-standalone` hides Back/Forward too — use `minimal-ui` if the site relies on
-  browser navigation (source: Steiner).
+  leaving the app (source: Firtman, since iOS 12.2). On macOS
+  `display: standalone` hides Back/Forward too — use `minimal-ui` if the site
+  relies on browser navigation (source: Steiner).
 
 Snippet and copy suggestions: [install-ux.md](references/install-ux.md).
 
@@ -426,7 +429,7 @@ Safari 17 added File → Add to Dock; manifests are optional. Source: WebKit.
 - Touch CSS: `-webkit-touch-callout`, tap highlight, `touch-action`.
 - Share → Add to Home Screen copy and the install-hint gating.
 
-**Carries over:** manifest `name`/`short_name`, `display`, `start_url`,
+**Carries over:** manifest `name`, `display`, `start_url`,
 `scope`, `id` and PNG icons; `@media (display-mode: standalone)`; the
 one-time cookie copy at install (same as iOS, verified); and the section 5
 recipe of a real `<body>` background plus a real background on any sticky
@@ -456,37 +459,42 @@ Full detail, the version timeline and remaining questions:
 - Test on a **real device** — the simulator does not reproduce safe-area timing,
   status-bar sampling or splash selection — add it to home screen, kill it and
   cold-launch it; most bugs appear after a swipe-up kill. Source: Joe Bell.
-- Check portrait _and_ landscape, a notched device _and_ one without, and an
-  iPad in both windowed and full-screen mode.
-- Open a modal and focus a text field; check light and dark mode and the status-bar tint in both.
-- View source: confirm **both** capable metas and startup-image links = unique triples × 2;
-  `curl -I` manifest, icon and splash URLs without cookies — each must return 200, not a redirect. Source: Joe Bell.
-  After changing icons or splash images, remove and re-add the app. Source: Joe Bell.
+- Check portrait/landscape, notched/unnotched devices and windowed/full-screen
+  iPad; focus a modal text field in light/dark mode; check the status-bar tint.
+- View source: confirm **both** capable metas and startup-image links = unique
+  triples × 2; `curl -I` manifest, icon and splash URLs without cookies — each
+  must return 200, not a redirect. Source: Joe Bell.
+- After changing icons or splash images, remove and re-add the app. Source: Joe Bell.
 - Use Safari's Web Inspector (Develop → device → app), not `console.log`.
 - macOS: add to Dock; check title bar, toolbar presence, and where an out-of-scope link opens.
 
 ## 14. Gotchas by iOS version
 
-| Version       | Behaviour                                                                                                                                                                       | Mitigation                                                      |
-| :------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :-------------------------------------------------------------- |
-| ≤ 11.2 / 11.3 | ≤ 11.2: No manifest support; `apple-*` metas only (`user-scalable=no` ignored in Safari since 10, still honoured in standalone); 11.3: Manifest + `env(safe-area-inset-*)` land | Keep the apple layer; baseline for `viewport-fit=cover`         |
-| 15            | `theme-color` respected in Safari UI                                                                                                                                            | Still emit it for other browsers                                |
-| 26.0          | `fixed` clipped to inner viewport; opaque fixed overlays don't fill; `100dvh` gap; theme-color sampling replaces the meta; any site can open as a web app                       | Absolute backdrops, `opacity: .99`, `100vh`                     |
-| 26.1          | Status bar opaque in standalone and `env(safe-area-inset-top)` → `0px` (WebKit 301994); `100dvh` gap fixed                                                                      | Layout must be correct at inset `0px`                           |
-| 26.2          | Status bar regression fixed — then **re-regressed on 26.5.2 and the iOS 27 beta** (301994 reopened); WebKit 259770 still open; 26.6 verified transparent (Joe Bell)             | Never hardcode a version workaround; feature-detect             |
-| iPadOS 26     | Home-screen apps open as resizable windows; system controls overlay the top-left and `env()` stays silent; no Window Controls Overlay                                           | Keep chrome out of that corner; test windowed _and_ full screen |
+| Version   | Behaviour                                                                                                                                                           | Mitigation                                                      |
+| :-------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :-------------------------------------------------------------- |
+| ≤ 11.2    | No manifest support; `apple-*` metas only (`user-scalable=no` ignored in Safari since 10, still honoured in standalone)                                             | Keep the apple layer                                            |
+| 11.3      | Manifest + `env(safe-area-inset-*)` land                                                                                                                            | Baseline for `viewport-fit=cover`                               |
+| 15        | `theme-color` respected in Safari UI                                                                                                                                | Still emit it for other browsers                                |
+| 26.0      | `fixed` clipped to inner viewport; opaque fixed overlays don't fill; `100dvh` gap; theme-color sampling replaces the meta; any site can open as a web app           | Absolute backdrops, `opacity: .99`, `100vh`                     |
+| 26.1      | Status bar opaque in standalone and `env(safe-area-inset-top)` → `0px` (WebKit 301994); `100dvh` gap fixed                                                          | Layout must be correct at inset `0px`                           |
+| 26.2      | Status bar regression fixed — then **re-regressed on 26.5.2 and the iOS 27 beta** (301994 reopened); WebKit 259770 still open; 26.6 verified transparent (Joe Bell) | Never hardcode a version workaround; feature-detect             |
+| iPadOS 26 | Home-screen apps open as resizable windows; system controls overlay the top-left and `env()` stays silent; no Window Controls Overlay                               | Keep chrome out of that corner; test windowed _and_ full screen |
 
 Full matrix with sources: [ios-26-notes.md](references/ios-26-notes.md). The
 macOS timeline is in [macos-add-to-dock.md](references/macos-add-to-dock.md).
 
 ## 15. Sources
 
-Every rule above is credited in [sources.md](references/sources.md); "Source:
-Joe Bell" means production experience rather than published writing.
+Sources for every section are in [sources.md](references/sources.md); rules
+without an inline tail are covered by the section's entries there.
 
 ## 16. Keeping this skill current
 
-- Durable = device-verified behaviour, answered questions, corrected sources or new device sizes — not project workarounds or unverified forum claims.
-- Amend section and reference; device findings use `Source: Joe Bell (verified <OS build>, <date>)`;
-  others author + URL; add `sources.md`, update/drop Open questions, bump `metadata.version`; stay ≤ 500 lines / 5,000 words and run `skill-check --strict`.
-- Prepare the diff for `metadata.upstream` and hand it to the user; never push there. See [maintenance.md](references/maintenance.md).
+- Durable = device-verified behaviour, answered questions, corrected sources
+  or new device sizes — not project workarounds or unverified forum claims.
+- Amend the section and reference. For device findings, use
+  `Source: Joe Bell (verified <OS build>, <date>)`; otherwise cite the author
+  and URL. Update `sources.md`, update/drop Open questions and `metadata.version`;
+  stay ≤ 500 lines / 5,000 words and run `skill-check --strict`.
+- Prepare the diff for `metadata.upstream` and hand it to the user; never push
+  there. See [maintenance.md](references/maintenance.md).

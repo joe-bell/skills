@@ -1,10 +1,11 @@
+# Installed web app helpers (safe areas, standalone)
+
 Optional. The skill itself is plain CSS; this is the Tailwind CSS v4 spelling of
 the same rules for projects that use it. v4 only — `@utility`,
 `@custom-variant`, `--value()` and the `(--var)` shorthand do not exist in v3.
 Keep the `env(safe-area-inset-*)` mirrors in `@layer base :root`; `@theme` is
-the wrong place for `env()`. Source: Joe Bell (a production Tailwind v4 app).
-
-# Installed web app helpers (safe areas, standalone)
+the wrong place for `env()`. Source: Joe Bell (a production Tailwind v4 app);
+Tailwind CSS v4 docs.
 
 ## §4 Viewport & safe areas
 
@@ -16,8 +17,31 @@ read like other padding classes:
 @utility pt-safe-area-* {
   padding-top: calc(env(safe-area-inset-top) + --spacing(--value(integer)));
 }
+@utility ps-safe-area-* {
+  padding-inline-start: calc(env(safe-area-inset-left) + --spacing(--value(integer)));
+  &:dir(rtl) {
+    padding-inline-start: calc(env(safe-area-inset-right) + --spacing(--value(integer)));
+  }
+}
+@utility pe-safe-area-* {
+  padding-inline-end: calc(env(safe-area-inset-right) + --spacing(--value(integer)));
+  &:dir(rtl) {
+    padding-inline-end: calc(env(safe-area-inset-left) + --spacing(--value(integer)));
+  }
+}
+@utility px-safe-area-* {
+  padding-left: calc(env(safe-area-inset-left) + --spacing(--value(integer)));
+  padding-right: calc(env(safe-area-inset-right) + --spacing(--value(integer)));
+}
+@utility py-safe-area-* {
+  padding-top: calc(env(safe-area-inset-top) + --spacing(--value(integer)));
+  padding-bottom: calc(env(safe-area-inset-bottom) + --spacing(--value(integer)));
+}
 /* repeat for pr-/pb-/pl- with the matching inset */
 ```
+
+`ps-`/`pe-` flip under `:dir(rtl)` because safe-area insets are physical, not
+logical.
 
 Use `h-(--header-height)` for `base + inset` bar heights (the `(--var)`
 shorthand, not `[var(--x)]`).

@@ -4,7 +4,8 @@
 
 There is no install prompt on iOS. The user must:
 
-1. Open the site in **Safari** (not Chrome, not an in-app browser).
+1. Open the site in **Safari** — this is the Safari flow; Chrome and Firefox on
+   iOS have their own menus (see below), in-app browsers can't install at all.
 2. Tap the Share button.
 3. Scroll to **Add to Home Screen**.
 4. Confirm.

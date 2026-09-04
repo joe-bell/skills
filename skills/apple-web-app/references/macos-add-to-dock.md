@@ -30,7 +30,7 @@ Source: WWDC23 session 10120; Thomas Steiner; Mark Otto; WebKit blog 17.4.
 ## Icons
 
 - macOS reads the **manifest** `icons`, not `apple-touch-icon` (verified on
-  macOS 26.6.2) and not `favicon.ico`. The manifest must be served as
+  macOS 26.6.2) and not `favicon.ico`. The manifest should be served as
   `application/manifest+json`.
 - Forum 738535 reported an SVG with `sizes: any` preferred on Safari 17, but
   Safari 26.6.2 used the PNG even when the SVG was listed first. Ship opaque

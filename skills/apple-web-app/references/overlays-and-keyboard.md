@@ -24,23 +24,69 @@ Call on open, on `resize`, and after content changes that alter page height.
 ## 2. Visual viewport height
 
 ```js
+const nonTextInputTypes = new Set([
+  "checkbox",
+  "radio",
+  "range",
+  "color",
+  "file",
+  "image",
+  "button",
+  "submit",
+  "reset",
+]);
+
+function willOpenKeyboard(element) {
+  return (
+    (element instanceof HTMLInputElement &&
+      !nonTextInputTypes.has(element.type)) ||
+    element instanceof HTMLTextAreaElement ||
+    (element instanceof HTMLElement && element.isContentEditable)
+  );
+}
+
 function syncViewport() {
   const vv = window.visualViewport;
-  if (!vv) return;
+  if (!vv || vv.scale > 1) return;
   // Multiplying by scale converts visual pixels back to layout pixels.
   const height = vv.height * vv.scale;
-  document.documentElement.style.setProperty("--visual-viewport-height", `${height}px`);
+  document.documentElement.style.setProperty(
+    "--visual-viewport-height",
+    `${height}px`,
+  );
+}
+
+function syncLayoutViewportHeight() {
+  const height = document.documentElement.clientHeight;
+  document.documentElement.style.setProperty(
+    "--visual-viewport-height",
+    `${height}px`,
+  );
 }
 
 window.visualViewport?.addEventListener("resize", syncViewport);
 window.visualViewport?.addEventListener("scroll", syncViewport);
-// `blur` fires before the keyboard-dismiss animation finishes, so updating here
-// avoids a frame where the dialog is centred against the shrunken viewport.
-window.addEventListener("blur", syncViewport, true);
+window.addEventListener(
+  "blur",
+  (event) => {
+    if (window.visualViewport?.scale > 1) return;
+    if (!willOpenKeyboard(event.target)) return;
+    requestAnimationFrame(() => {
+      if (!willOpenKeyboard(document.activeElement)) {
+        syncLayoutViewportHeight();
+      }
+    });
+  },
+  true,
+);
 ```
 
-Ignore updates while `vv.scale > 1` — the user is pinch-zooming and you don't
-want the dialog to chase them.
+`blur` fires before the keyboard-dismiss animation finishes. If its target would
+have opened the keyboard, wait one frame to see whether focus moves to another
+keyboard-opening element; if it does not, set the layout viewport height early
+rather than wait for `visualViewport`'s resize. Both paths ignore updates while
+`visualViewport.scale > 1`, so a pinch-zoomed dialog does not chase the user.
+Source: React Spectrum.
 
 ## 3. Backdrop: absolute, page-sized
 
@@ -77,11 +123,12 @@ Inject the rule from a `<style>` element so it is in the cascade before any
 ```js
 const style = document.createElement("style");
 style.textContent = "@layer { * { overscroll-behavior: contain } }";
-document.head.append(style);
+document.head.prepend(style);
 ```
 
-`@layer` keeps it at the lowest precedence so page styles still win where they
-matter. Remove the element when the last overlay closes.
+Prepending the `<style>` makes its anonymous `@layer` the first (and therefore
+lowest-precedence) layer, so page styles still win where they matter. Remove
+the element when the last overlay closes. Source: React Spectrum.
 
 ## 6. `touchmove` prevention
 
