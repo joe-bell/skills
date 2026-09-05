@@ -17,6 +17,7 @@ Before every commit, run:
 ```sh
 npx prettier@3 --check .
 npx skill-check@1.2.0 check ./skills --no-security-scan --strict
+node --test tests/apple-web-app-snippets.test.mjs
 ```
 
 Fix formatting with `npx prettier@3 --write .`. Code fences are left as

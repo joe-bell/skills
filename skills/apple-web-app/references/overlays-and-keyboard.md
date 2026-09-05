@@ -5,9 +5,9 @@
 iOS 26 clips `position: fixed` to the **inner** viewport rather than the layout
 viewport. A backdrop that used to cover everything now covers only the visible
 window, and reveals page content as soon as the user scrolls or the keyboard
-resizes the viewport. Adobe's React Spectrum worked out a portable fix
-(PR #8888, follow-up #8922); MUI hit the same problem (#46953). What follows is
-that approach, generalised.
+resizes the viewport. Adobe's React Spectrum worked out a portable fix (PR
+#8888, follow-up #8922); MUI hit the same problem (#46953). What follows is that
+approach, generalised.
 
 ## 1. Page dimensions as custom properties
 
@@ -19,7 +19,8 @@ function syncPageSize() {
 }
 ```
 
-Call on open, on `resize`, and after content changes that alter page height.
+`startOverlayViewportSync()` below calls this on open and window resize. Call it
+separately after content changes that alter page height.
 
 ## 2. Visual viewport height
 
@@ -152,8 +153,8 @@ document.head.prepend(style);
 ```
 
 Prepending the `<style>` makes its anonymous `@layer` the first (and therefore
-lowest-precedence) layer, so page styles still win where they matter. Remove
-the element when the last overlay closes. Source: React Spectrum.
+lowest-precedence) layer, so page styles still win where they matter. Remove the
+element when the last overlay closes. Source: React Spectrum.
 
 ## 6. `touchmove` prevention
 
@@ -188,8 +189,8 @@ viewport changes under it when the keyboard appears.
 
 ## 10. `isolation: isolate`
 
-Put it on the backdrop and on your scroll root. Stacking contexts around
-sticky bars, `backdrop-filter` and portals are otherwise unpredictable.
+Put it on the backdrop and on your scroll root. Stacking contexts around sticky
+bars, `backdrop-filter` and portals are otherwise unpredictable.
 
 ## iOS 26.0-only bugs
 

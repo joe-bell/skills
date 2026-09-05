@@ -45,9 +45,7 @@
    or the host repo's equivalents) and `wc -l -w` on `SKILL.md`.
 3. Bump `metadata.version` for the delivered content change. Run
    `node --test tests/apple-web-app-snippets.test.mjs` when snippets change
-   (in this repository). For a routing or workflow change, use the cases in
-   `tests/evals/apple-web-app/` when available; these are maintainer fixtures,
-   not part of the installed skill.
+   (in this repository).
 4. When committing, name the finding. Include the OS/Safari build for device
    findings; do not invent a device build for an editorial or code correction.
 

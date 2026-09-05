@@ -48,9 +48,8 @@ shorthand, not `[var(--x)]`).
 
 ## Scroll container & bars
 
-**Scroll root** — `isolate size-full min-h-screen overflow-x-hidden
-overflow-y-scroll overscroll-y-contain
-not-standalone:min-h-[-webkit-fill-available]`.
+**Scroll root** —
+`isolate size-full min-h-screen overflow-x-hidden overflow-y-scroll overscroll-y-contain not-standalone:min-h-[-webkit-fill-available]`.
 Use this scroll-root recipe only for a matching layout problem. Evaluate
 `min-h-screen` for a reproduced cold-launch height issue; preserve a working
 `min-h-dvh` layout. See [layout-and-touch.md](layout-and-touch.md).
@@ -70,18 +69,29 @@ bar. Make a standalone blur taller with
 
 ## Overlays
 
-Use `absolute inset-x-0 top-0 w-(--page-width) h-(--page-height) isolate` for
-the backdrop and `sticky top-[calc(var(--visual-viewport-height)/2)]
--translate-y-1/2` for the dialog.
+Use the JavaScript initialization and cleanup in
+[overlays-and-keyboard.md](overlays-and-keyboard.md) to populate the page and
+visual-viewport variables. Keep the CSS recipe's fallbacks before
+initialization:
+
+```html
+<div class="absolute inset-x-0 top-0 w-[var(--page-width,100%)] h-[var(--page-height,100%)] isolate">
+  <div class="sticky top-[calc(var(--visual-viewport-height,100vh)/2)] -translate-y-1/2 max-h-[calc(var(--visual-viewport-height,100vh)-2rem)]">
+    <!-- Dialog content -->
+  </div>
+</div>
+```
+
+Source: React Spectrum recipe, in [sources.md](sources.md).
 
 ## Touch & native-feel
 
-Use `select-none touch-manipulation` on chrome,
-`[-webkit-touch-callout:none]` only on media with a replacement gesture, `[text-size-adjust:100%]` on `body`,
+Use `select-none touch-manipulation` on chrome, `[-webkit-touch-callout:none]`
+only on media with a replacement gesture, `[text-size-adjust:100%]` on `body`,
 and `[content-visibility:auto]` on long grid items.
-`scroll-pt-(--header-height)` and `motion-safe:scroll-smooth` cover anchors
-and motion; `hover:` already compiles to `@media (hover: hover)`.
-Keep `-webkit-tap-highlight-color: transparent` as a `:where(*)` rule in
+`scroll-pt-(--header-height)` and `motion-safe:scroll-smooth` cover anchors and
+motion; `hover:` already compiles to `@media (hover: hover)`. Keep
+`-webkit-tap-highlight-color: transparent` as a `:where(*)` rule in
 `@layer base`, not a utility. Promote any repeated arbitrary property to an
 `@utility`.
 

@@ -4,9 +4,11 @@ import test from "node:test";
 import vm from "node:vm";
 
 function javascriptFences(path) {
-  return [...readFileSync(path, "utf8").matchAll(/```js\n([\s\S]*?)```/g)].map(
-    (match) => match[1],
-  );
+  return [
+    ...readFileSync(new URL(`../${path}`, import.meta.url), "utf8").matchAll(
+      /```js\n([\s\S]*?)```/g,
+    ),
+  ].map((match) => match[1]);
 }
 
 function storage(initial = {}) {
@@ -135,7 +137,7 @@ test("overlay viewport synchronization initializes and cleans up", () => {
   assert.deepEqual(cancelledFrames, [1, 2]);
   assert.equal(removed.length, 4);
   for (let index = 0; index < listeners.length; index += 1) {
-    assert.equal(removed[index][2], listeners[index][2]);
+    assert.deepEqual(removed[index], listeners[index]);
   }
 });
 
