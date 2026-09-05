@@ -16,7 +16,7 @@ misleading: it does not make the bar black, it removes it and hands you the
 pixels. Choosing it means every top-anchored element needs
 `padding-top: env(safe-area-inset-top)`.
 
-## Safari 26 colour sampling
+## Safari 26 colour sampling (community observations)
 
 Safari 26 stopped honouring `<meta name="theme-color">` for the top and bottom
 system areas. Instead it samples the page:
@@ -32,7 +32,8 @@ system areas. Instead it samples the page:
 5. If `<body>` is transparent, use `<html>`'s.
 6. If that is also transparent, fall back to white (or black in dark mode).
 
-Treat the numbers as approximate — they are derived from community reverse
+Source: Ben Frain; Jahir Fiquitiva; Ben Nasedkin; Pavel Larionov, in
+[sources.md](sources.md). Treat the numbers as approximate — they are derived from community reverse
 engineering, not documentation, and have shifted between point releases.
 
 ### Pitfalls

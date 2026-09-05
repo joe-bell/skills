@@ -11,7 +11,8 @@
 ## 1. Conventions
 
 - A durable finding is verified device behaviour, an answered open question, a
-  source shown wrong, or a new device size. Exclude project-specific workarounds
+  source shown wrong, a new device size, or a demonstrated instruction/snippet
+  defect. Exclude project-specific workarounds
   and unverified forum claims.
 - Add a `Source:` tail to the affected rule. For device work, use
   `Source: Joe Bell (verified <OS build>, <date>)`; for published work, give
@@ -42,24 +43,32 @@
 2. Run the validation commands from the repository's AGENTS.md
    (`npx prettier@3 --check .` and `npx skill-check@1.2.0 check ./skills --no-security-scan --strict`,
    or the host repo's equivalents) and `wc -l -w` on `SKILL.md`.
-3. Commit with a message naming the finding and the tested OS/Safari build.
+3. Bump `metadata.version` for the delivered content change. Run
+   `node --test tests/apple-web-app-snippets.test.mjs` when snippets change
+   (in this repository). For a routing or workflow change, use the cases in
+   `tests/evals/apple-web-app/` when available; these are maintainer fixtures,
+   not part of the installed skill.
+4. When committing, name the finding. Include the OS/Safari build for device
+   findings; do not invent a device build for an editorial or code correction.
 
 ## 4. Upstreaming
 
-This local folder's public home is `metadata.upstream`; Joe Bell publishes it
-manually.
+First distinguish this upstream repository from an installed copy. Check the
+repository remote against `metadata.upstream` without changing remotes.
 
-1. Check drift before preparing a handoff. Fetch the upstream `SKILL.md`
-   frontmatter with
-   `gh api repos/joe-bell/skills/contents/skills/apple-web-app/SKILL.md` or an
-   equivalent raw URL, then compare `metadata.version`.
-2. If upstream is newer, merge its changes into this local copy first. If the
-   repository or path does not exist, say so and stop.
-3. Prepare a diff limited to this skill folder with `git diff`, or copy the
-   folder, and hand it to the user with a suggested PR title/body naming the
-   finding, device/OS and sources added. One finding per PR.
-4. Never push to or create the upstream repository; Joe Bell publishes
-   manually.
+- **In the upstream repository:** follow its AGENTS.md and the user's requested
+  delivery workflow. An ordinary skill edit needs no upstream fetch or handoff.
+- **In a copied skill:** prepare a handoff by default. Compare upstream versions
+  when preparing that contribution. If the remote is unavailable, finish the
+  local change and disclose that drift was not checked. Inspect upstream changes
+  before integrating them; a newer version alone is not grounds to overwrite
+  local work.
+
+Limit each contribution to one finding. Include a suggested title/body, sources,
+and device evidence when relevant. Publishing a copied skill upstream is not
+implied by fixing the host project; follow explicit user authorization for
+pushing or creating a PR. Do not create a missing upstream repository as part
+of this maintenance procedure.
 
 ## 5. Re-check cadence
 
@@ -72,4 +81,5 @@ provisional.
 
 - Add unsourced claims, version-sniffing advice, project paths or framework
   code.
-- Reopen an answered question without a new OS/Safari build.
+- Reopen an answered question without new evidence (a build, reproduction or
+  conflicting authoritative source).

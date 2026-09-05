@@ -64,21 +64,43 @@ function syncLayoutViewportHeight() {
   );
 }
 
-window.visualViewport?.addEventListener("resize", syncViewport);
-window.visualViewport?.addEventListener("scroll", syncViewport);
-window.addEventListener(
-  "blur",
-  (event) => {
+function startOverlayViewportSync() {
+  const vv = window.visualViewport;
+  let blurFrame;
+
+  const handleBlur = (event) => {
     if (window.visualViewport?.scale > 1) return;
     if (!willOpenKeyboard(event.target)) return;
-    requestAnimationFrame(() => {
+    if (blurFrame !== undefined) cancelAnimationFrame(blurFrame);
+    blurFrame = requestAnimationFrame(() => {
+      blurFrame = undefined;
       if (!willOpenKeyboard(document.activeElement)) {
         syncLayoutViewportHeight();
       }
     });
-  },
-  true,
-);
+  };
+  const handleWindowResize = () => {
+    syncPageSize();
+    if (!vv) syncLayoutViewportHeight();
+  };
+
+  syncPageSize();
+  if (vv && vv.scale <= 1) syncViewport();
+  else if (!vv) syncLayoutViewportHeight();
+
+  vv?.addEventListener("resize", syncViewport);
+  vv?.addEventListener("scroll", syncViewport);
+  window.addEventListener("resize", handleWindowResize);
+  window.addEventListener("blur", handleBlur, true);
+
+  return () => {
+    vv?.removeEventListener("resize", syncViewport);
+    vv?.removeEventListener("scroll", syncViewport);
+    window.removeEventListener("resize", handleWindowResize);
+    window.removeEventListener("blur", handleBlur, true);
+    if (blurFrame !== undefined) cancelAnimationFrame(blurFrame);
+  };
+}
 ```
 
 `blur` fires before the keyboard-dismiss animation finishes. If its target would
@@ -86,7 +108,10 @@ have opened the keyboard, wait one frame to see whether focus moves to another
 keyboard-opening element; if it does not, set the layout viewport height early
 rather than wait for `visualViewport`'s resize. Both paths ignore updates while
 `visualViewport.scale > 1`, so a pinch-zoomed dialog does not chase the user.
-Source: React Spectrum.
+Call `startOverlayViewportSync()` when the first overlay opens and call its
+returned cleanup function when the last overlay closes. Call `syncPageSize()`
+after an open overlay's content changes its page dimensions. Source: React
+Spectrum; listener lifecycle adapted during this repository's snippet review.
 
 ## 3. Backdrop: absolute, page-sized
 

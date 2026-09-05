@@ -9,8 +9,8 @@ Format: **Author — Title (date) — URL** — what this skill took from it.
   device table driving both the image set and the `<link>` list, deduplicated by
   `width × height @ dpr`, cache-busted by query), the safe-area CSS variable
   mirror pattern and `base + inset` bar heights, the standalone scroll container
-  and the cold-launch reveal gate (test the mirrored property for non-emptiness,
-  never for `> 0`, and always ship a timeout), progressive-blur translucent
+  and the historical cold-launch reveal gate (a non-empty mirror
+  was used as a heuristic; it does not establish layout readiness), progressive-blur translucent
   bars, the icon/splash/`<body>` colour-matching rule, and "auth must never
   redirect the manifest, icons or splash images". Rules carrying
   "Source: Joe Bell" in this skill come from production experience, not from
@@ -272,3 +272,17 @@ Borrowed from those two: the
 detection snippet; "there is no `beforeinstallprompt` on iOS, so show manual
 Add to Home Screen instructions"; "delay the install hint until engagement and
 persist the dismissal"; and the manifest field checklist.
+
+## Example corrections (2026-09-05)
+
+- **Repository snippet review and Node regression tests (2026-09-05)** —
+  maintainer tests in `tests/apple-web-app-snippets.test.mjs` exercise the
+  documented JavaScript. Visit recording is separate from install-hint
+  eligibility. Overlay synchronization initializes immediately, removes its
+  listeners, cancels pending blur frames and updates the layout-height fallback
+  on resize. These checks are code evidence, not Safari/device verification.
+- **Repository readiness-claim review (2026-09-05)** — a computed inset of
+  `0px` is non-empty even when layout can change later; reading that value
+  cannot establish that safe-area layout has settled. Removed the polling
+  example rather than promoting it as a readiness API. The older production
+  observation is retained above; no new OS build was tested.
