@@ -5,8 +5,16 @@ Share menu). Any site qualifies — a manifest is optional but honoured when
 present. The app is saved to `~/Applications` and gets its own Dock icon, menu
 bar and window. Source: WebKit blog 17.0; Apple Support 104996.
 
-Per-app settings live in the web app's own Settings: name, URL, icon,
-"Show navigation controls", "Show color in title bar", Privacy and Extensions.
+Per-app settings live in the web app's own Settings: name, URL, icon, "Show
+navigation controls", "Show color in title bar", Privacy and Extensions.
+
+## Install hints
+
+Safari has no `beforeinstallprompt` on macOS. Any product hint should describe
+File → Add to Dock (or the Share menu), not the iOS Add to Home Screen flow.
+Since Safari 18, the browser's own dismissible "Open in web app" banner can
+surface an already-installed app; do not add a redundant hint without a product
+reason. Source: WebKit blog 17.0 and 18.0; Apple Support 104996.
 
 ## Manifest members on macOS
 
@@ -53,10 +61,9 @@ home-assistant discussion #3243; Joe Bell (verified macOS 26.6.2).
 The history matters here, because the behaviour has changed twice:
 
 - **Sonoma / Safari 17.** Apple said the site's theme colour "blends into the
-  toolbar". In practice Mark Otto found `theme-color` and manifest
-  `theme_color` ignored, with the title bar (under the "Show color in title
-  bar" setting) taking `<body>`'s `background-color`; manifest
-  `background_color` did work.
+  toolbar". In practice Mark Otto found `theme-color` and manifest `theme_color`
+  ignored, with the title bar (under the "Show color in title bar" setting)
+  taking `<body>`'s `background-color`; manifest `background_color` did work.
 - **Safari 26 on macOS 26.** Safari's own window and title bars sample page
   colour much as on iOS: `<body>`'s background, or a `fixed`/`sticky` element
   touching the top edge — reported as ≥ 90% width on macOS (vs 80% on iOS) and
@@ -86,14 +93,15 @@ grooovinger; OSXDaily; Joe Bell (verified macOS 26.6.2).
 
 ## Cookies and storage
 
-At Add to Dock, Safari **copies the site's cookies once** into the web app.
-From then on the cookie jars are separate. Nothing else is copied — not
+At Add to Dock, Safari **copies the site's cookies once** into the web app. From
+then on the cookie jars are separate. Nothing else is copied — not
 `localStorage`, not IndexedDB, not the cache.
 
-The practical consequence, and Apple's own advice: keep authentication state in
-cookies and users stay signed in when they install. iOS behaves the same way
-(verified on iOS 26.6 — see the main skill). Website data can be cleared per
-app from its Settings → Privacy.
+For an app that already authenticates with cookies, this copy can preserve
+sign-in at installation. Preserve the existing authentication architecture; this
+behavior alone is not a reason to migrate it. For the iOS observation, see
+[install-ux.md](install-ux.md). Website data can be cleared per app from its
+Settings → Privacy.
 
 Source: WebKit blog 17.0; WWDC23 session 10120; Apple Support 104996.
 
@@ -109,9 +117,9 @@ Source: WebKit blog 17.0; WWDC23 session 10120; Apple Support 104996.
   an installed app's `scope` open in that app; inside Safari you get a
   dismissible "Open in web app" banner.
 
-The forum 766767 report that all external links stay in-app did not reproduce
-on macOS 26.6.2. Treat it as version-specific or configuration-specific; still
-test your own links on older Safari 18 builds.
+The forum 766767 report that all external links stay in-app did not reproduce on
+macOS 26.6.2. Treat it as version-specific or configuration-specific; still test
+your own links on older Safari 18 builds.
 
 Source: WWDC23 session 10120; Thomas Steiner; WebKit blog 18.0; Apple Developer
 Forums 766767; Joe Bell (verified macOS 26.6.2).
@@ -121,20 +129,20 @@ Forums 766767; Joe Bell (verified macOS 26.6.2).
 - `display: standalone` or `fullscreen` — no toolbar at all.
 - Anything else — a toolbar with Back, Forward and Share. There is no reload
   button.
-- The minimum window size is 336×186 CSS px. On macOS 26.6.2, size and
-  position were **not** restored after quit/relaunch (the app reopened large);
-  no manifest control over size is documented.
-- Web apps participate in Cmd+Tab, Stage Manager, Mission Control, Launchpad
-  and Spotlight like any other app.
+- The minimum window size is 336×186 CSS px. On macOS 26.6.2, size and position
+  were **not** restored after quit/relaunch (the app reopened large); no
+  manifest control over size is documented.
+- Web apps participate in Cmd+Tab, Stage Manager, Mission Control, Launchpad and
+  Spotlight like any other app.
 
 Source: Thomas Steiner; WWDC23 session 10120; WebKit blog 17.0; Joe Bell
 (verified macOS 26.6.2).
 
 ## Notifications, badging, shortcuts, extensions
 
-- Notifications display the app's icon. Sound is **off by default on macOS**
-  and on by default on iOS, so set `silent` explicitly rather than relying on
-  the platform default.
+- Notifications display the app's icon. Sound is **off by default on macOS** and
+  on by default on iOS, so set `silent` explicitly rather than relying on the
+  platform default.
 - Dock badging uses the Badging API; its permission comes bundled with
   notification permission.
 - `shortcuts` manifest entries become File-menu and Dock-menu commands, and
@@ -143,18 +151,18 @@ Source: Thomas Steiner; WWDC23 session 10120; WebKit blog 17.0; Joe Bell
   per app (Safari 18+).
 - iCloud Keychain and passkey AutoFill work.
 - **Not supported** as of Sonoma: File System Access, Web Share Target, and the
-  Window Controls Overlay API. Re-check these on current macOS before relying
-  on the absence. Source: Thomas Steiner.
+  Window Controls Overlay API. Re-check these on current macOS before relying on
+  the absence. Source: Thomas Steiner.
 
 Source: WWDC23 session 10120; WebKit blog 17.0, 17.4 and 18.0.
 
 ## Detection
 
-Use `window.matchMedia("(display-mode: standalone)").matches`. This was wrong
-in early Sonoma betas and fixed in beta 3 (WebKit bug 257806).
+Use `window.matchMedia("(display-mode: standalone)").matches`. This was wrong in
+early Sonoma betas and fixed in beta 3 (WebKit bug 257806).
 `navigator.standalone` is **undefined** on macOS — it is an iOS-only legacy
-flag, so a detection helper that relies on it alone will report `false` inside
-a Dock app. A `minimal-ui` app matches its own display-mode query.
+flag, so a detection helper that relies on it alone will report `false` inside a
+Dock app. A `minimal-ui` app matches its own display-mode query.
 
 ## Debugging
 
@@ -164,18 +172,17 @@ Dock app. Source: devtoolstips.org.
 
 ## Nothing to do on macOS
 
-Each of these is load-bearing on iOS and inert here, so don't spend time on
-them for a Mac-only target:
+Each of these is load-bearing on iOS and inert here, so don't spend time on them
+for a Mac-only target:
 
-- `viewport-fit=cover` and every `env(safe-area-inset-*)` — a desktop window
-  has no notch or home indicator, so all four insets are `0px`.
+- `viewport-fit=cover` and every `env(safe-area-inset-*)` — a desktop window has
+  no notch or home indicator, so all four insets are `0px`.
 - `apple-mobile-web-app-capable`, `apple-mobile-web-app-title` and
   `apple-mobile-web-app-status-bar-style` — documented as iOS-only, with no
   reported effect on macOS. Harmless to leave in place for your iOS users.
 - `apple-touch-startup-image` and the whole device table. No launch image
-  concept is documented for macOS web apps, so **generate nothing**. (This is
-  an absence of documentation rather than a documented "no".)
-- The cold-launch reveal gate — there is no safe-area timing problem to hide.
+  concept is documented for macOS web apps, so **generate nothing**. (This is an
+  absence of documentation rather than a documented "no".)
 - Touch CSS: `-webkit-touch-callout`, `-webkit-tap-highlight-color`,
   `touch-action`.
 - Share → Add to Home Screen copy and the install-hint gating model. The macOS

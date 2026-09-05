@@ -5,9 +5,9 @@
 iOS 26 clips `position: fixed` to the **inner** viewport rather than the layout
 viewport. A backdrop that used to cover everything now covers only the visible
 window, and reveals page content as soon as the user scrolls or the keyboard
-resizes the viewport. Adobe's React Spectrum worked out a portable fix
-(PR #8888, follow-up #8922); MUI hit the same problem (#46953). What follows is
-that approach, generalised.
+resizes the viewport. Adobe's React Spectrum worked out a portable fix (PR
+#8888, follow-up #8922); MUI hit the same problem (#46953). What follows is that
+approach, generalised.
 
 ## 1. Page dimensions as custom properties
 
@@ -19,7 +19,8 @@ function syncPageSize() {
 }
 ```
 
-Call on open, on `resize`, and after content changes that alter page height.
+`startOverlayViewportSync()` below calls this on open and window resize. Call it
+separately after content changes that alter page height.
 
 ## 2. Visual viewport height
 
@@ -64,21 +65,43 @@ function syncLayoutViewportHeight() {
   );
 }
 
-window.visualViewport?.addEventListener("resize", syncViewport);
-window.visualViewport?.addEventListener("scroll", syncViewport);
-window.addEventListener(
-  "blur",
-  (event) => {
+function startOverlayViewportSync() {
+  const vv = window.visualViewport;
+  let blurFrame;
+
+  const handleBlur = (event) => {
     if (window.visualViewport?.scale > 1) return;
     if (!willOpenKeyboard(event.target)) return;
-    requestAnimationFrame(() => {
+    if (blurFrame !== undefined) cancelAnimationFrame(blurFrame);
+    blurFrame = requestAnimationFrame(() => {
+      blurFrame = undefined;
       if (!willOpenKeyboard(document.activeElement)) {
         syncLayoutViewportHeight();
       }
     });
-  },
-  true,
-);
+  };
+  const handleWindowResize = () => {
+    syncPageSize();
+    if (!vv) syncLayoutViewportHeight();
+  };
+
+  syncPageSize();
+  if (vv && vv.scale <= 1) syncViewport();
+  else if (!vv) syncLayoutViewportHeight();
+
+  vv?.addEventListener("resize", syncViewport);
+  vv?.addEventListener("scroll", syncViewport);
+  window.addEventListener("resize", handleWindowResize);
+  window.addEventListener("blur", handleBlur, true);
+
+  return () => {
+    vv?.removeEventListener("resize", syncViewport);
+    vv?.removeEventListener("scroll", syncViewport);
+    window.removeEventListener("resize", handleWindowResize);
+    window.removeEventListener("blur", handleBlur, true);
+    if (blurFrame !== undefined) cancelAnimationFrame(blurFrame);
+  };
+}
 ```
 
 `blur` fires before the keyboard-dismiss animation finishes. If its target would
@@ -86,7 +109,10 @@ have opened the keyboard, wait one frame to see whether focus moves to another
 keyboard-opening element; if it does not, set the layout viewport height early
 rather than wait for `visualViewport`'s resize. Both paths ignore updates while
 `visualViewport.scale > 1`, so a pinch-zoomed dialog does not chase the user.
-Source: React Spectrum.
+Call `startOverlayViewportSync()` when the first overlay opens and call its
+returned cleanup function when the last overlay closes. Call `syncPageSize()`
+after an open overlay's content changes its page dimensions. Source: React
+Spectrum; listener lifecycle adapted during this repository's snippet review.
 
 ## 3. Backdrop: absolute, page-sized
 
@@ -127,8 +153,8 @@ document.head.prepend(style);
 ```
 
 Prepending the `<style>` makes its anonymous `@layer` the first (and therefore
-lowest-precedence) layer, so page styles still win where they matter. Remove
-the element when the last overlay closes. Source: React Spectrum.
+lowest-precedence) layer, so page styles still win where they matter. Remove the
+element when the last overlay closes. Source: React Spectrum.
 
 ## 6. `touchmove` prevention
 
@@ -163,8 +189,8 @@ viewport changes under it when the keyboard appears.
 
 ## 10. `isolation: isolate`
 
-Put it on the backdrop and on your scroll root. Stacking contexts around
-sticky bars, `backdrop-filter` and portals are otherwise unpredictable.
+Put it on the backdrop and on your scroll root. Stacking contexts around sticky
+bars, `backdrop-filter` and portals are otherwise unpredictable.
 
 ## iOS 26.0-only bugs
 
