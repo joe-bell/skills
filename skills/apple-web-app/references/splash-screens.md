@@ -5,11 +5,20 @@
 Startup images are an iOS/iPadOS feature. macOS Dock web apps have no launch
 image concept — there is nothing to generate for them.
 
-When a home-screen app launches, iOS looks through the `<link
-rel="apple-touch-startup-image">` elements in the page it cached at install
-time and uses the **first whose `media` query matches exactly**. There is no
-scaling and no fallback: a device with no matching entry gets a blank screen in
-the app's background colour (usually white).
+Startup images use `<link rel="apple-touch-startup-image">` elements with
+media queries for the device and orientation. Do not assume that iOS
+re-evaluates appearance on every launch: WebKit bug 259328 reports that an
+installation keeps its original light or dark startup image after system
+appearance changes, in both directions. This establishes reported persistence,
+not the internal selection algorithm or behavior on every iOS release.
+Source: Stephen, [WebKit 259328](https://bugs.webkit.org/show_bug.cgi?id=259328).
+
+Provide an image whose media conditions match the target device and orientation,
+with raster dimensions matching the launch window. The web.dev PWA guide
+requires exact window sizing and describes a white launch screen when no image
+covers the user's context. Do not rely on an unmatched entry as a fallback;
+verify the actual launch on the supported iOS build. Source: web.dev,
+[Enhancements](https://web.dev/learn/pwa/enhancements).
 
 Requirements:
 
@@ -48,9 +57,10 @@ Get this wrong and iOS either rejects the image or stretches it.
 
 ## Design rules
 
-- The background **must** equal the manifest `background_color` and the
-  `<body>` background. Any difference shows as a flash at the splash → first
-  paint handover, which is the exact thing a splash screen exists to hide.
+- Aim to match the app's first rendered background. A saved app theme can
+  differ from the appearance used for the installed splash, so dual images
+  cannot guarantee a seamless handover. Source: Joe Bell; Stephen, WebKit
+  259328, in [sources.md](sources.md).
 - Centre the mark/wordmark and keep it well inside the safe area. The status
   bar, notch, and home indicator all overlay the splash and vary per device.
 - Decorative framing generally only works in portrait — in landscape it either
@@ -64,16 +74,18 @@ Three artefacts, all derived from **one device table** so they can never drift
 apart. Source: Joe Bell.
 
 1. **The image set.** For every unique `width × height @ dpr` triple in the
-   table, two PNGs — portrait and landscape — sized points × dpr. With the
-   table in [ios-devices.md](ios-devices.md) that is 22 triples × 2 = 44
-   images.
+   table, portrait and landscape PNGs for each appearance, sized points × dpr.
+   With the table in [ios-devices.md](ios-devices.md), one appearance needs
+   22 × 2 = 44 images; separate light and dark sets need 22 × 2 × 2 = 88.
 2. **The link list.** Two `<link rel="apple-touch-startup-image">` elements per
-   triple, each carrying the exact four-clause media query above (device-width,
-   device-height, `-webkit-device-pixel-ratio`, orientation) and a cache-bust
-   query on the `href`.
+   triple per appearance, each carrying the four-clause media query above
+   (device-width, device-height, `-webkit-device-pixel-ratio`, orientation) and a cache-bust
+   query on the `href`. For separate light/dark sets, also include
+   `(prefers-color-scheme: light)` or `(prefers-color-scheme: dark)` and use
+   distinct image URLs.
 3. **The device table itself**, as the single source of truth that both of the
    above are generated from. Adding a device should be a one-line edit that
-   produces both a new pair of images and a new pair of links.
+   produces a new pair of images and links for each appearance.
 
 Each image is the background colour plus a centred mark. Decoration beyond that
 generally only works in portrait — see the design rules above.
@@ -89,24 +101,70 @@ Two neutral ways to produce the set:
   working. Whichever you choose, validate the requested size against the device
   table so an unknown triple fails loudly instead of returning a blank image.
 
+## Saved app themes
+
+A `localStorage` override or `data-theme` attribute controls app rendering;
+it is not itself a startup-image media feature. Setting the page's
+`color-scheme` through CSS or a meta tag is not a documented way to override
+its `prefers-color-scheme` queries. The CSSWG proposal to make the meta tag
+change that query was retracted. Do not recommend this as a saved-theme splash
+fix without an installed-device test. Source: CSSWG,
+[issue 10249](https://github.com/w3c/csswg-drafts/issues/10249).
+
+Default to preserving an existing light/dark set: it can match the system
+appearance at installation, even though later theme changes can leave a
+mismatch. For a new app with no startup artwork, start with one neutral set
+unless matching installation appearance is a product requirement. This is a
+design recommendation, not a verified cache workaround. Source: Joe Bell,
+editorial design guidance in [sources.md](sources.md).
+
+A neutral image set without an appearance clause avoids selecting different
+artwork for light and dark. It is a design tradeoff: it may match neither app
+background exactly, and branding changes can still leave stale artwork. It
+does not track the saved theme. Source: Joe Bell, editorial design guidance in
+[sources.md](sources.md).
+
 ## Cache busting
 
-iOS caches startup images extremely aggressively, per home-screen entry.
+Treat startup artwork as persistent per Home Screen entry. Version image URLs
+when artwork changes; a new URL identifies a new asset, but does not prove an
+existing installation will replace its startup image. Remove and re-add is the
+refresh procedure retained from production experience. Source: Joe Bell, in
+[sources.md](sources.md).
 
-- Add a version query to every `href` (`?v2`) and bump it whenever the design
-  changes. Source: Joe Bell. This forces a new URL for anything not yet installed.
-- For an app already on the home screen, the only reliable refresh is to
-  **remove and re-add** it. Say so in your release notes; do not spend a day
-  chasing a "stale splash" bug.
+### Open questions
+
+The following have not been verified by this skill's device tests:
+
+- Whether a synchronous script inserting only the saved theme's links, or
+  rewriting their media attributes before installation, affects selection.
+- Whether an installed-page reload, manifest change or versioned startup URL
+  refreshes the installed image without reinstalling.
+- Whether an OS update re-evaluates selection for an existing entry.
+
+Keep these separate from the reported appearance persistence. Test each change
+on its own installation and record the exact OS build and date before promoting
+it to guidance. Source: Joe Bell, investigation scope in [sources.md](sources.md).
 
 ## Verification
 
 - View the deployed HTML and count the emitted `apple-touch-startup-image`
-  links: the total must equal unique triples × 2.
+  links: the total must equal unique triples × 2 orientations × appearance count.
 - `curl -I` one image URL with **no cookies**: it must return `200` and
   `content-type: image/png`. A redirect to a sign-in page means the splash will
   silently never appear for signed-out installs.
 - Add to home screen, kill the app, cold-launch, and watch the handover.
+- For appearance selection, install in light, switch to dark before the first
+  launch, then cold-launch. Repeat with a launch before the switch, and repeat
+  both tests in reverse. Record the startup image separately from app rendering.
+- For refresh experiments, change one input per installed entry and record both
+  image requests and visible startup frames. A successful fetch is not proof
+  of a refreshed splash. Compare with a fresh install as a positive control.
+  Testing an OS update requires preserving the same entry across that update;
+  separate fresh installs on two runtimes do not establish invalidation.
+
+Source for the appearance reproduction: Stephen, WebKit 259328; additional
+controls are an unexecuted test plan, in [sources.md](sources.md).
 
 ## Gotchas
 
@@ -116,8 +174,8 @@ iOS caches startup images extremely aggressively, per home-screen entry.
   easily 100 links for ~44 unique sizes. Deduplicate by `width × height @ dpr`
   before emitting.
 - Landscape entries double the count; that part is unavoidable.
-- New devices need a new row _and_ a cache-bust bump, or existing installs keep
-  the old set.
+- New devices need a new row and generated assets/links. URL versioning does
+  not guarantee that existing installs acquire the new set.
 - Splash images are unrelated to the manifest — Android uses `background_color`
   - icon + `name` instead, and needs none of this.
 

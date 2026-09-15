@@ -286,3 +286,34 @@ persist the dismissal"; and the manifest field checklist.
   cannot establish that safe-area layout has settled. Removed the polling
   example rather than promoting it as a readiness API. The older production
   observation is retained above; no new OS build was tested.
+
+## Startup appearance review (2026-09-15)
+
+- **Stephen — WebKit bug 259328 (2023-07-18)** —
+  https://bugs.webkit.org/show_bug.cgi?id=259328 — reports startup images
+  retaining the installation's appearance after system light/dark changes in
+  both directions. Read as NEW on 2026-09-15. The report fields say Safari 17
+  and iOS 16; they are not a tested support matrix. Used to replace the
+  unconditional claim of selection at every launch.
+- **CSSWG — "[mediaqueries] Effect of `<meta name=color-scheme>` on the
+  `(prefers-color-scheme)` MQ" (opened 2024-04-25)** —
+  https://github.com/w3c/csswg-drafts/issues/10249 — resolved to close with no
+  change on 2026-01-21; closed as retracted on 2026-06-12. Page color-scheme
+  is not an established startup-selection override.
+- **web.dev — "Enhancements" (updated 2024-09-20)** —
+  https://web.dev/learn/pwa/enhancements — exact launch-window image sizing,
+  media-specific variants and a white launch screen when no startup image
+  covers the user's context. Restores missing coverage guidance without the
+  earlier unsupported blanket claims about no scaling or the fallback colour
+  matching the app background. This published guidance was not retested on
+  iOS 26 in this revision.
+- **Joe Bell — startup-theme investigation (2026-09-15, editorial review)** —
+  this repository's startup reference — appearance-aware image/link counts,
+  neutral artwork tradeoff, preserving existing light/dark sets by default,
+  starting new artwork with a neutral set unless the product requires matching
+  installation appearance, and the unexecuted installation/refresh test plan.
+  Production feedback reports a dark-installed splash remaining dark after a
+  system switch to light and refreshing on reinstall. Exact OS/Safari build
+  was not supplied, so this is not promoted as a new device-verified finding.
+  No new Simulator or hardware tests ran for this revision. Script timing,
+  manifest/reload/URL invalidation and OS-update behavior remain unverified.
