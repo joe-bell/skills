@@ -70,6 +70,11 @@ Source: Firtman; WebKit, retained historical guidance in
 - WebKit bug 259770 (`interactive-widget=resizes-content`) is still open, so
   keyboard handling stays a `visualViewport` job.
 
+Startup-image selection and refresh questions are tracked in
+[splash-screens.md](splash-screens.md). These remain unverified; that work queue
+is not evidence of an iOS 26 regression. Source: Joe Bell, investigation scope
+in [sources.md](sources.md).
+
 ## iPadOS 26 windows
 
 iPadOS 26 ships with **Windowed Apps** on by default (Settings → Multitasking &

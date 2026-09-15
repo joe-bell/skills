@@ -48,8 +48,10 @@ When a manifest is part of the product, preserve its intended `name`,
 `short_name`, `start_url`, `scope`, `id` and display mode. `standalone` is a
 common app choice, not an audit requirement for every site. Set intentional
 `background_color` and `theme_color` values for supporting browsers; use the
-actual body background for a seamless splash handover. Source: community skills;
-Firtman; Joe Bell, in [sources.md](sources.md).
+actual first-rendered body background as the splash design target. A cached
+startup image may differ after a theme change; see
+[splash-screens.md](splash-screens.md). Source: community skills; Firtman;
+Joe Bell; Stephen, WebKit 259328, in [sources.md](sources.md).
 
 ## Icons
 
@@ -61,8 +63,10 @@ Firtman; Joe Bell, in [sources.md](sources.md).
 - Preferred asset workflow: render sizes from **one vector mark at build time**
   onto an opaque background, rather than hand-exporting each. One artwork source
   means the sizes can never drift apart.
-- Use the same background colour for icon, splash and `<body>`. Any mismatch
-  shows as a flash between splash and first paint. Source: Joe Bell.
+- Keep icon and splash artwork visually consistent. Aim to match the splash
+  to the first-rendered `<body>` background, while allowing for the saved-theme
+  and cache limitations in [splash-screens.md](splash-screens.md).
+  Source: Joe Bell; Stephen, WebKit 259328, in [sources.md](sources.md).
 - Icons are fetched **without cookies**. If they 302 to a sign-in page, iOS
   falls back to a screenshot of the page. Source: Joe Bell.
 - iOS caches icons per home-screen entry: after changing one you must remove and

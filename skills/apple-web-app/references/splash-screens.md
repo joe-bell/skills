@@ -13,6 +13,13 @@ appearance changes, in both directions. This establishes reported persistence,
 not the internal selection algorithm or behavior on every iOS release.
 Source: Stephen, [WebKit 259328](https://bugs.webkit.org/show_bug.cgi?id=259328).
 
+Provide an image whose media conditions match the target device and orientation,
+with raster dimensions matching the launch window. The web.dev PWA guide
+requires exact window sizing and describes a white launch screen when no image
+covers the user's context. Do not rely on an unmatched entry as a fallback;
+verify the actual launch on the supported iOS build. Source: web.dev,
+[Enhancements](https://web.dev/learn/pwa/enhancements).
+
 Requirements:
 
 - `apple-mobile-web-app-capable` must be `yes`. Without it, no startup image is
@@ -71,8 +78,8 @@ apart. Source: Joe Bell.
    With the table in [ios-devices.md](ios-devices.md), one appearance needs
    22 × 2 = 44 images; separate light and dark sets need 22 × 2 × 2 = 88.
 2. **The link list.** Two `<link rel="apple-touch-startup-image">` elements per
-   triple per appearance, each carrying the exact four-clause media query above (device-width,
-   device-height, `-webkit-device-pixel-ratio`, orientation) and a cache-bust
+   triple per appearance, each carrying the four-clause media query above
+   (device-width, device-height, `-webkit-device-pixel-ratio`, orientation) and a cache-bust
    query on the `href`. For separate light/dark sets, also include
    `(prefers-color-scheme: light)` or `(prefers-color-scheme: dark)` and use
    distinct image URLs.
@@ -103,6 +110,13 @@ its `prefers-color-scheme` queries. The CSSWG proposal to make the meta tag
 change that query was retracted. Do not recommend this as a saved-theme splash
 fix without an installed-device test. Source: CSSWG,
 [issue 10249](https://github.com/w3c/csswg-drafts/issues/10249).
+
+Default to preserving an existing light/dark set: it can match the system
+appearance at installation, even though later theme changes can leave a
+mismatch. For a new app with no startup artwork, start with one neutral set
+unless matching installation appearance is a product requirement. This is a
+design recommendation, not a verified cache workaround. Source: Joe Bell,
+editorial design guidance in [sources.md](sources.md).
 
 A neutral image set without an appearance clause avoids selecting different
 artwork for light and dark. It is a design tradeoff: it may match neither app
