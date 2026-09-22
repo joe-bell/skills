@@ -5,7 +5,7 @@ metadata:
   source: hand-maintained by Joe Bell; derived from the public Letterboxd RSS feed
   reviewed: "2026-09-22 against four live letterboxd.com RSS feeds"
   upstream: "https://github.com/joe-bell/skills/tree/main/skills/letterboxd-diary"
-  version: "2026-09-22.8"
+  version: "2026-09-22.9"
 allowed-tools: Bash(curl -sSf https://letterboxd.com/:*) WebFetch(domain:letterboxd.com)
 ---
 
@@ -26,8 +26,9 @@ first that answers:
    - a `Letterboxd username: <username>` line in the host's persistent
      instructions or memory — `CLAUDE.md`, `AGENTS.md`, a memory file, a user
      preferences file.
-3. **Ask.** One question: "What's your Letterboxd username?" It is the last
-   path segment of the profile URL — `letterboxd.com/<username>/`.
+3. **Ask.** One question and nothing else: "What's your Letterboxd
+   username?" Explain that it is the last path segment of the profile URL —
+   `letterboxd.com/<username>/` — only if asked what that means.
 
 After asking, offer once to save it, and write it only where the user agrees:
 
@@ -70,16 +71,46 @@ go back up.
    sandbox whose network allowlist omits the domain. Drop to rung 2 and say so
    once at the end.
 
-2. **The host's fetch tool**, if it has one. Two failures, both of which mean
-   moving on rather than rephrasing the call:
-   - It refuses the URL because the URL came from this file. Some hosts only
-     fetch URLs the user typed or an earlier result returned, and a skill file
-     does not count. Source: observed in a Claude Desktop local-agent session,
+2. **The host's fetch tool**, if it has one. Two failures, leading different
+   ways:
+   - **It refuses the URL over where the URL came from.** Some hosts only open
+     URLs that appeared in a user message or an earlier result, and a skill
+     file does not count. Go to rung 3. Source: refused as a permissions error
+     on claude.ai web chat, and in a Claude Desktop local-agent session,
      2026-09-22.
-   - It converts the page to markdown and drops the namespaced `letterboxd:*`
-     elements section 3 parses.
+   - **Anything else** — no fetch tool at all, or one that converts the page to
+     markdown and drops the namespaced `letterboxd:*` elements section 3
+     parses. Rung 3 cannot help with either, so go to rung 4.
 
-3. **A browser tool**, if the host has one — an in-app browser pane or a
+3. **Ask for the URL back.** Only after that first refusal. Such a host will
+   open the very same URL once it has appeared in a user message, so the
+   permission is one paste away. Fetching the pasted URL is a fresh call the
+   host now allows, not a retry of rung 2.
+
+   Put the feed URL in a fenced code block and ask for it back:
+
+   ```
+   To finish setup, send this link back as its own message:
+   https://letterboxd.com/<username>/rss/
+   ```
+
+   A fenced block — not inline code, not a link. Copying out of a fence gives
+   plain text, and a client that auto-links a bare domain can send the domain
+   and the path as separate pieces, so the full URL never arrives as one string
+   and the fetch is refused again. Say nothing else unless asked why.
+
+   When the reply arrives, fetch the URL exactly as sent and continue with
+   section 3. If it still is not one contiguous URL, ask once for it as plain
+   text, then go to rung 4.
+
+   The permission belongs to the conversation, so this repeats in each new one
+   on such a host. With the username already saved, skip the question in
+   section 1 and go straight to the URL block. Source: fetch refused from the
+   skill file, then returning `application/rss+xml` with all 50 entries and
+   every namespaced element intact once pasted, claude.ai web chat,
+   2026-09-22.
+
+4. **A browser tool**, if the host has one — an in-app browser pane or a
    browser extension. Navigate to the feed URL and read the page text. Browsers
    serve the feed as plain XML source with every namespaced element intact, so
    section 3 parses it unchanged. A full 50-entry feed runs to about 43 KB, so
@@ -89,9 +120,10 @@ go back up.
    2026-09-22.
 
 **Never web-search for the feed.** Search engines do not index RSS feeds, so a
-web search spends a round trip and returns nothing usable. Rung 3 is the answer
-to a blocked rung 1 — and looking up the host's own browser tool, where tools
-are listed or loaded on demand, is part of taking that rung, not a search.
+web search spends a round trip and returns nothing usable. The lower rungs are
+the answer to a blocked rung 1 — and looking up the host's own browser tool,
+where tools are listed or loaded on demand, is part of taking rung 4, not a
+search.
 
 ### When the shell is blocked
 
@@ -123,7 +155,7 @@ diary is empty rather than reporting an error.
 - Some hosts split `allowed-tools` on spaces, which would break the curl entry.
   If it isn't honoured, that's why — the skill still works, it just asks for
   permission first.
-- Rung 3 of the ladder is deliberately not listed. Browser tools are named
+- Rung 4 of the ladder is deliberately not listed. Browser tools are named
   differently on every host, so pre-approving one would be a guess; expect a
   permission prompt there.
 

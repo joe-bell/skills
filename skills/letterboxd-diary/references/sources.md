@@ -34,6 +34,18 @@ Format: **Author — Title (date) — URL** — what this skill took from it.
   hold unchanged on that route. The feed measured about 43 KB for a full
   50-entry window, which is close enough to a typical read cap to be worth
   raising.
+- **claude.ai web chat (observed 2026-09-22)** — rung 1 exits 22 with HTTP 403
+  and an `x-deny-reason` header naming a host allowlist, so the sandbox proxy
+  blocks the domain; because the error names a 403 and not a 404, the section 1
+  rule already reads it as a network failure rather than a wrong username. Rung
+  2 is refused with a permissions error when the URL comes from the skill file,
+  and refused again when the client auto-links only part of a pasted URL, so
+  the domain and the path never arrive as one string. Sending the full URL as
+  its own plain message succeeds: the response is `application/rss+xml`, raw,
+  with all 50 entries and every `letterboxd:*` and `tmdb:*` element intact, so
+  the section 3 parsing rules hold on that route too. Allowing
+  `letterboxd.com` in that host's code-execution network settings restores rung
+  1 and skips all of it.
 - **A Claude Desktop local-agent session (observed 2026-09-22)** — its fetch
   tool refused the feed URL on the grounds that the URL had appeared only in a
   skill file rather than in the conversation, and its sandbox had no network
