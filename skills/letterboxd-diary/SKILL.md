@@ -128,10 +128,21 @@ search.
 ### When the shell is blocked
 
 Only when rung 1 actually ran and failed for a reason other than a 404, add one
-line after the films saying the shell could not reach `letterboxd.com`, and that
-allowing that domain in the host's network settings restores the fast path. Once
-per conversation, not once per request. A host with no shell at all has nothing
-to allowlist, so say nothing there.
+line after the films: the shell could not reach `letterboxd.com`, and allowing
+that domain in the host's network settings makes every later request a single
+fetch — no paste step, no browser. Once per conversation, not once per request.
+A host with no shell at all has nothing to allowlist, so say nothing there.
+
+If asked where that setting is, answer for the host in hand rather than
+guessing a menu:
+
+- **claude.ai** — Settings, then Capabilities, then code execution and file
+  creation, which is where the allowed-domains list sits. On an
+  organisation-managed plan an admin may have to add the domain instead.
+  Source: reported from a claude.ai session, 2026-09-22.
+- **Anywhere else** — it is the host's sandbox or code-execution network
+  allowlist. Name `letterboxd.com` and let the user find it; do not invent a
+  path.
 
 The feed is newest-first by publish date and carries a fixed window. Section 4
 says what that window actually covers — it is not simply "the last 50 things".
