@@ -23,18 +23,21 @@ page or the toolbar band below it. It fills each band from the page, and
 WebKit's source states the rule. For the top and bottom edges separately:
 
 1. Hit-test one point: the horizontal centre of the edge, 4px inside it. Only
-   `position: fixed` and `position: sticky` layers are hit; `absolute` and
-   in-flow content never are, and CSS `pointer-events` is ignored.
+   `position: fixed` and `position: sticky` elements and their contents are
+   hit; other page content, including `absolute` elements outside them, never
+   is. CSS `pointer-events` is ignored.
 2. Walk up from the hit element to the first fixed or sticky ancestor (or the
    element itself) that qualifies. Nothing beneath the hit element is
    considered, so a narrow fixed element at the centre point hides a
-   qualifying one below it. `opacity: 0`, `visibility: hidden`, and elements
-   with no background, no `backdrop-filter` and no children are skipped.
-3. A qualifying element spans at least 90% of the viewport width.
+   qualifying one below it. `opacity` below 0.1, `visibility: hidden`, and
+   elements with no background, no `backdrop-filter` and no children are
+   skipped; empty images, video, canvas and iframes are not.
+3. A qualifying element spans at least 90% of the viewport width, measured
+   after 4px is trimmed from each side (about 347px of a 393px viewport).
 4. Its `background-color` is used when its border box is more than 10px in
    both dimensions. A smaller one is sampled from a 2px strip 4–6px inside the
    edge, so an edge bar needs to be about 6px deep to count. The element's own
-   `opacity` is not applied to the colour; only `0` excludes it.
+   `opacity` is not applied to the colour; below 0.1 it is skipped instead.
 5. A colour with alpha below 0.75, or any full-viewport dimming layer, is
    blended over the page background colour — not over the pixels actually
    beneath it.
@@ -49,14 +52,14 @@ WebKit's source states the rule. For the top and bottom edges separately:
    honouring `pointer-events`, which also skips a `pointer-events: none` dim.
 10. The bottom band only takes a tint when the page uses `viewport-fit=cover`.
 
-Source: WebKit `LocalFrameView::fixedContainerEdges`; Joe Bell (verified iOS
-Simulator 26.5 23F77 and 27.0 24A434, 2026-09-22); Larionov for item 10; the
+Source: WebKit `LocalFrameView::fixedContainerEdges`; Joe Bell (iOS Simulator
+26.5 23F77 and 27.0 24A434, 2026-09-22); Larionov for item 10; the
 `<html>` fallback chain from Fiquitiva and Nasedkin, in
 [sources.md](sources.md). Earlier community measurements (Frain; Fiquitiva)
 found the same shape; their ~80% width, ~3px height and "`opacity: 0` is still
-sampled" figures do not match the source or these runs. Thresholds are
-Simulator-verified only; confirm on a device before depending on an exact
-value.
+sampled" figures do not match the source or these runs. The measurements are
+Simulator observations and **Unverified** on a device; confirm there before
+depending on an exact value.
 
 ### Pitfalls
 
@@ -77,9 +80,9 @@ value.
   so it replaces the stored colour. The band then shows the dim over the page
   background, not over the header; give the strip the header colour with the
   dim already applied, opaque, if the two must match.
-- `display: none` remains the safe way to park an overlay. `opacity: 0` and
-  `visibility: hidden` are skipped on the builds above, but Frain observed
-  them sampled earlier in 26.x.
+- `display: none` remains the safe way to park an overlay. `opacity` below 0.1
+  and `visibility: hidden` are skipped in the source and in these Simulator
+  runs, but Frain observed `opacity: 0` sampled earlier in 26.x.
 - A header that "looks" coloured because the page behind it is coloured has no
   `background-color` of its own, so sampling falls through to `<body>`. That is
   fine if they match — and breaks the moment you add dark mode.
@@ -180,12 +183,12 @@ be the element sampling finds:
   dim.
 - A page whose sticky header already tints the top keeps that tint: add the
   edge strip from Pitfalls while the dialog is open.
-- Opacity transitions are fine: sampling ignores the element's `opacity` apart
-  from `0`, so each band switches colour when the fade starts or ends rather
-  than fading.
+- Opacity transitions are fine: sampling ignores the element's `opacity` once
+  it reaches 0.1, so each band switches colour as the fade crosses that value
+  rather than fading with it.
 
-Source: WebKit; Joe Bell (verified iOS Simulator 26.5 23F77 and 27.0 24A434,
-2026-09-22), in [sources.md](sources.md).
+Source: WebKit; Joe Bell (iOS Simulator 26.5 23F77 and 27.0 24A434,
+2026-09-22; **Unverified** on a device), in [sources.md](sources.md).
 
 ## macOS
 

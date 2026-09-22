@@ -74,7 +74,8 @@ Source: Firtman; WebKit, retained historical guidance in
   keyboard handling stays a `visualViewport` job.
 - **Edge sampling on a device.** The model in
   [theme-color-and-status-bar.md](theme-color-and-status-bar.md) is
-  source-derived and Simulator-verified (26.5 23F77, 27.0 24A434, 2026-09-22).
+  source-derived and observed in Simulator only (26.5 23F77, 27.0 24A434,
+  2026-09-22), so it is **Unverified** on a device.
   Confirm the 90% width, ~6px depth and sticky-header behaviour on hardware,
   and check whether `position: fixed` still clips on 26.0.x before choosing
   between the absolute and fixed backdrop recipes.

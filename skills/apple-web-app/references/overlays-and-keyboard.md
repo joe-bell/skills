@@ -134,8 +134,8 @@ dim that fills the whole screen, paint it with `position: fixed; inset: 0` —
 recipe D in [theme-color-and-status-bar.md](theme-color-and-status-bar.md). On
 the builds below that fixed dim also covered the scrolled page; whether 26.0
 still clips it, which is what this absolute recipe works around, is unverified.
-Source: WebKit; Joe Bell (verified iOS Simulator 26.5 23F77 and 27.0 24A434,
-2026-09-22).
+Source: WebKit; Joe Bell (iOS Simulator 26.5 23F77 and 27.0 24A434,
+2026-09-22; **Unverified** on a device).
 
 ## 4. Dialog: sticky, centred on the visual viewport
 
