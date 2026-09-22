@@ -16,37 +16,75 @@ misleading: it does not make the bar black, it removes it and hands you the
 pixels. Choosing it means every top-anchored element needs
 `padding-top: env(safe-area-inset-top)`.
 
-## Safari 26 colour sampling (community observations)
+## Safari 26 colour sampling
 
-Safari 26 stopped honouring `<meta name="theme-color">` for the top and bottom
-system areas. Instead it samples the page:
+Safari 26 does not honour `<meta name="theme-color">` for the strip above the
+page or the toolbar band below it. It fills each band from the page, and
+WebKit's source states the rule. For the top and bottom edges separately:
 
-1. Look for an element with `position: fixed` or `position: sticky` that touches
-   the top edge of the viewport: at least ~80% of the viewport width, at least
-   ~3px tall, and within ~4px of the edge.
-2. Take that element's `background-color` (or the effective colour behind its
-   `backdrop-filter`) as the top tint.
-3. Repeat for the bottom edge (tolerance ~3px). The bottom tint only applies
-   when the page uses `viewport-fit=cover`.
-4. If no element qualifies, use `<body>`'s background colour.
-5. If `<body>` is transparent, use `<html>`'s.
-6. If that is also transparent, fall back to white (or black in dark mode).
+1. Hit-test one point: the horizontal centre of the edge, 4px inside it. Only
+   `position: fixed` and `position: sticky` layers are hit; `absolute` and
+   in-flow content never are, and CSS `pointer-events` is ignored.
+2. Walk up from the hit element to the first fixed or sticky ancestor (or the
+   element itself) that qualifies. Nothing beneath the hit element is
+   considered, so a narrow fixed element at the centre point hides a
+   qualifying one below it. `opacity: 0`, `visibility: hidden`, and elements
+   with no background, no `backdrop-filter` and no children are skipped.
+3. A qualifying element spans at least 90% of the viewport width.
+4. Its `background-color` is used when its border box is more than 10px in
+   both dimensions. A smaller one is sampled from a 2px strip 4–6px inside the
+   edge, so an edge bar needs to be about 6px deep to count. The element's own
+   `opacity` is not applied to the colour; only `0` excludes it.
+5. A colour with alpha below 0.75, or any full-viewport dimming layer, is
+   blended over the page background colour — not over the pixels actually
+   beneath it.
+6. With nothing qualifying, the band is the page background: `<body>`'s
+   `background-color` (it won over `<html>`'s with both set); `<html>`'s, then
+   white or black, when `<body>` is transparent.
+7. A full-viewport overlay keeps the edge's existing colour when one is already
+   set. A dialog opened over a page whose sticky header tints the top leaves
+   the strip at the header's colour above the dimmed page.
+8. A `::backdrop` (native `<dialog>`, popover) counts as a dimming layer.
+9. If the walk found only skipped `pointer-events: none` layers, Safari retries
+   honouring `pointer-events`, which also skips a `pointer-events: none` dim.
+10. The bottom band only takes a tint when the page uses `viewport-fit=cover`.
 
-Source: Ben Frain; Jahir Fiquitiva; Ben Nasedkin; Pavel Larionov, in
-[sources.md](sources.md). Treat the numbers as approximate — they are derived
-from community reverse engineering, not documentation, and have shifted between
-point releases.
+Source: WebKit `LocalFrameView::fixedContainerEdges`; Joe Bell (verified iOS
+Simulator 26.5 23F77 and 27.0 24A434, 2026-09-22); Larionov for item 10; the
+`<html>` fallback chain from Fiquitiva and Nasedkin, in
+[sources.md](sources.md). Earlier community measurements (Frain; Fiquitiva)
+found the same shape; their ~80% width, ~3px height and "`opacity: 0` is still
+sampled" figures do not match the source or these runs. Thresholds are
+Simulator-verified only; confirm on a device before depending on an exact
+value.
 
 ### Pitfalls
 
-- **`opacity: 0` elements are still sampled.** An invisible full-width overlay
-  parked at the top will tint the status bar. Hide it with `display: none` (or
-  `visibility: hidden` plus removal from the edge).
+- **Paint dims with `position: fixed`.** An absolutely positioned backdrop is
+  never hit, however large, so both bands stay at the page background above a
+  dimmed page.
+- **Keep narrow fixed UI off the centre of an edge.** A floating toolbar, a
+  toast or a framework dev toolbar fixed at `bottom: 0` takes that band over
+  and leaves it at the page background. Raise it at least 4px or keep it off
+  the centre line.
+- **An empty full-width `pointer-events: none` layer above a dim** (a portal
+  root, a toast container) triggers the retry in item 9 and hides a
+  `pointer-events: none` dim. Give the layer no size, or let the dim take
+  pointer events.
+- **Sticky headers keep the strip when a dialog opens** (item 7). While the
+  dialog is open, show a full-width fixed strip at the edge, more than 10px
+  deep (24px tested), with the dim's background: it is an ordinary candidate,
+  so it replaces the stored colour. The band then shows the dim over the page
+  background, not over the header; give the strip the header colour with the
+  dim already applied, opaque, if the two must match.
+- `display: none` remains the safe way to park an overlay. `opacity: 0` and
+  `visibility: hidden` are skipped on the builds above, but Frain observed
+  them sampled earlier in 26.x.
 - A header that "looks" coloured because the page behind it is coloured has no
   `background-color` of its own, so sampling falls through to `<body>`. That is
   fine if they match — and breaks the moment you add dark mode.
-- Elements with `backdrop-filter` sample as blurred/translucent; the resulting
-  tint is not exactly your brand colour.
+- Elements with `backdrop-filter` are reported to Safari as multiple colours,
+  so the tint is not exactly your brand colour.
 - `theme_color` in the manifest is **not** applied to home-screen apps as of
   26.1. The manifest value is still worth setting for Android.
 
@@ -113,6 +151,41 @@ body {
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f5f4" />
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1c1917" />
 ```
+
+### D. A dim that reaches both Safari bands
+
+The page viewport stops short of the screen in a Safari tab — 714pt of 874 on
+an iPhone 17 Pro — and the strip above it and the toolbar band below it are
+Safari's. A dialog's dim only reaches them through edge sampling, so it has to
+be the element sampling finds:
+
+```html
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+```
+
+```css
+.dim {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 0.2);
+}
+```
+
+- `position: fixed`, never `absolute`: an absolute dim, however tall, dims the
+  page and leaves both bands at the page background.
+- `inset: 0` alone sizes it; `min-height: 100dvh` or a page-height variable
+  adds nothing to the bands.
+- Nothing narrower than 90% fixed on the centre of either edge above it, and no
+  empty full-width `pointer-events: none` layer above a `pointer-events: none`
+  dim.
+- A page whose sticky header already tints the top keeps that tint: add the
+  edge strip from Pitfalls while the dialog is open.
+- Opacity transitions are fine: sampling ignores the element's `opacity` apart
+  from `0`, so each band switches colour when the fade starts or ends rather
+  than fading.
+
+Source: WebKit; Joe Bell (verified iOS Simulator 26.5 23F77 and 27.0 24A434,
+2026-09-22), in [sources.md](sources.md).
 
 ## macOS
 

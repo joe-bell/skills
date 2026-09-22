@@ -127,6 +127,16 @@ Spectrum; listener lifecycle adapted during this repository's snippet review.
 }
 ```
 
+**This backdrop never reaches Safari's status-bar strip or toolbar band.** Edge
+sampling only hits fixed and sticky layers, so an absolute backdrop dims the
+page and leaves both bands at the page background, however tall it is. For a
+dim that fills the whole screen, paint it with `position: fixed; inset: 0` —
+recipe D in [theme-color-and-status-bar.md](theme-color-and-status-bar.md). On
+the builds below that fixed dim also covered the scrolled page; whether 26.0
+still clips it, which is what this absolute recipe works around, is unverified.
+Source: WebKit; Joe Bell (verified iOS Simulator 26.5 23F77 and 27.0 24A434,
+2026-09-22).
+
 ## 4. Dialog: sticky, centred on the visual viewport
 
 ```css
