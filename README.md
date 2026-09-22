@@ -29,6 +29,7 @@ npx skills@latest add joe-bell/skills --skill apple-web-app
 ## Reference
 
 - [**apple-web-app**](./skills/apple-web-app/SKILL.md) — Building web apps on iOS, iPadOS and macOS
+- [**letterboxd-diary**](./skills/letterboxd-diary/SKILL.md) — Fetching recently watched films from a Letterboxd diary
 
 ## License
 
