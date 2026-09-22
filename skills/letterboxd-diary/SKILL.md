@@ -45,8 +45,9 @@ An unknown username returns HTTP 404, and `curl -f` then exits non-zero with a
 message naming the 404. **Read the message, not the exit code** — the same 404
 exits 22 over HTTP/1.1 and 56 over HTTP/2. Source: curl 8.7.1, observed
 2026-09-22. Treat it as a wrong username: say which one was tried and ask for
-the right one, and do not guess variations. A non-zero exit that does not
-mention a 404 is a network problem rather than a bad username — see section 2.
+the right one, and do not guess variations. Any other non-zero exit is not a
+bad username; rung 1 of section 2 says how to tell a blocked host from a fault
+somewhere else.
 
 ## 2. Source
 
@@ -66,10 +67,16 @@ go back up.
    curl -sSf https://letterboxd.com/<username>/rss/
    ```
 
-   A non-zero exit naming a 404 is a wrong username — section 1. Any other
-   non-zero exit means the host cannot reach letterboxd.com, typically a
-   sandbox whose network allowlist omits the domain. Drop to rung 2 and say so
-   once at the end.
+   Read the error, not the exit code, and sort it into three:
+   - **A 404** is a wrong username — section 1.
+   - **A policy denial** — a 403, a proxy refusal, a deny-reason header naming
+     a host allowlist, a blocked DNS lookup — means the host will not let the
+     shell reach letterboxd.com. Drop to rung 2 and say so once at the end.
+     Source: HTTP 403 with a deny-reason header naming a host allowlist,
+     claude.ai web chat, 2026-09-22.
+   - **Any other failure** — a 5xx from Letterboxd, a TLS error, no curl on the
+     machine — also drops to rung 2, but it is not an allowlist problem. Report
+     what actually failed instead.
 
 2. **The host's fetch tool**, if it has one. Two failures, leading different
    ways:
@@ -99,9 +106,15 @@ go back up.
    and the path as separate pieces, so the full URL never arrives as one string
    and the fetch is refused again. Say nothing else unless asked why.
 
-   When the reply arrives, fetch the URL exactly as sent and continue with
-   section 3. If it still is not one contiguous URL, ask once for it as plain
-   text; go to rung 4 only if that second paste arrives broken too.
+   When the reply arrives, fetch the URL exactly as sent, then check the
+   response as rung 2 would: it has to be the raw feed with the namespaced
+   `letterboxd:*` elements intact. Only then continue with section 3.
+
+   A paste settles where the URL came from and nothing else, so this rung ends
+   at rung 4 whenever that isn't the whole problem: the fetch fails for any
+   reason other than provenance, or it returns markdown with the namespaced
+   elements stripped. A reply that still isn't one contiguous URL gets one
+   further ask for it as plain text, then rung 4 as well.
 
    The permission belongs to the conversation, so this repeats in each new one
    on such a host. With the username already saved, skip the question in
@@ -125,13 +138,19 @@ the answer to a blocked rung 1 — and looking up the host's own browser tool,
 where tools are listed or loaded on demand, is part of taking rung 4, not a
 search.
 
-### When the shell is blocked
+### When network policy blocks the shell
 
-Only when rung 1 actually ran and failed for a reason other than a 404, add one
-line after the films: the shell could not reach `letterboxd.com`, and allowing
-that domain in the host's network settings makes every later request a single
-fetch — no paste step, no browser. Once per conversation, not once per request.
-A host with no shell at all has nothing to allowlist, so say nothing there.
+Only when rung 1 ran and failed with a policy denial — a 403, a proxy refusal,
+a deny-reason header naming a host allowlist, a blocked DNS lookup — add one
+line after the films: the host would not let the shell reach
+`letterboxd.com`, and allowing that domain in its network settings makes every
+later request a single fetch, with no paste step and no browser. Once per
+conversation, not once per request.
+
+Say none of that otherwise. A 5xx, a TLS error or a missing curl is
+Letterboxd's fault or the machine's, and no allowlist will touch it — name the
+actual failure if it is worth naming at all. A host with no shell has nothing
+to allowlist either.
 
 If asked where that setting is, answer for the host in hand rather than
 guessing a menu:
