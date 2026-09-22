@@ -22,6 +22,12 @@
   seen, and record it in [sources.md](sources.md).
 - If the documented curl flags change, change the `allowed-tools` entry in the
   frontmatter to match — it is a literal command prefix, not a pattern.
+- A host that blocks one retrieval route is a durable finding: record which
+  rung of the ladder failed, how it failed, and what reached the feed instead.
+  Attribute it to the session that saw it rather than to the host's
+  documentation. Add rungs only when an existing one is genuinely unavailable —
+  the ladder is a fail-fast sequence, and every extra rung costs a round trip
+  on hosts that need it.
 - **Never rely on whitespace inside inline code.** Prettier strips leading and
   trailing spaces inside backticks, so a rule written as "split on ` - `"
   silently becomes "split on `-`" on the next format pass — which breaks on
