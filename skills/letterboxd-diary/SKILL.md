@@ -59,8 +59,7 @@ usually still has another. Try these in order, allow each rung **one** attempt,
 and move down on failure. Never retry a rung that has already failed, and never
 go back up.
 
-1. **A shell, with curl.** The fast path, and the only one that returns the XML
-   untouched.
+1. **A shell, with curl.** The fast path.
 
    ```
    curl -sSf https://letterboxd.com/<username>/rss/
@@ -83,21 +82,24 @@ go back up.
 3. **A browser tool**, if the host has one — an in-app browser pane or a
    browser extension. Navigate to the feed URL and read the page text. Browsers
    serve the feed as plain XML source with every namespaced element intact, so
-   section 3 parses it unchanged. A full 50-entry feed runs to roughly 45 KB, so
+   section 3 parses it unchanged. A full 50-entry feed runs to about 43 KB, so
    raise any character limit the read offers rather than parsing a truncated
-   feed. Source: `letterboxd.com` RSS feed read through a browser pane,
+   feed. Source: `letterboxd.com` RSS feed read through the Claude desktop
+   app's Chromium browser pane (Chrome 152), macOS 26.0 / Darwin 27.0.0,
    2026-09-22.
 
-**Never web-search for the feed, and never search for a way to reach it.**
-Search engines do not index RSS feeds, so a search spends a round trip and
-returns nothing usable. Rung 3 is the answer to a blocked rung 1.
+**Never web-search for the feed.** Search engines do not index RSS feeds, so a
+web search spends a round trip and returns nothing usable. Rung 3 is the answer
+to a blocked rung 1 — and looking up the host's own browser tool, where tools
+are listed or loaded on demand, is part of taking that rung, not a search.
 
 ### When the shell is blocked
 
-If the films came from rung 2 or 3, add one line after them saying the shell
-could not reach `letterboxd.com`, and that allowing that domain in the host's
-network settings restores the fast path. Once per conversation, not once per
-request.
+Only when rung 1 actually ran and failed for a reason other than a 404, add one
+line after the films saying the shell could not reach `letterboxd.com`, and that
+allowing that domain in the host's network settings restores the fast path. Once
+per conversation, not once per request. A host with no shell at all has nothing
+to allowlist, so say nothing there.
 
 The feed is newest-first by publish date and carries a fixed window. Section 4
 says what that window actually covers — it is not simply "the last 50 things".
@@ -239,9 +241,9 @@ preamble, no closing line, no headers, and no sub-bullets beyond a review — an
 no commentary around the output either. Watched date, rewatch, rating, likes and
 counts are details: silence about them is correct, not incomplete.
 
-Two things override this, because they change what the answer means rather than
-decorate it: the truncation line in section 4, and saying the diary is empty
-when it is.
+Three things override this, because they change what the answer means rather
+than decorate it: the truncation line in section 4, saying the diary is empty
+when it is, and the blocked-shell line in section 2.
 
 ### Adding fields
 
