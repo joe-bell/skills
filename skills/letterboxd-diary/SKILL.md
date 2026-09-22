@@ -101,7 +101,7 @@ go back up.
 
    When the reply arrives, fetch the URL exactly as sent and continue with
    section 3. If it still is not one contiguous URL, ask once for it as plain
-   text, then go to rung 4.
+   text; go to rung 4 only if that second paste arrives broken too.
 
    The permission belongs to the conversation, so this repeats in each new one
    on such a host. With the username already saved, skip the question in
