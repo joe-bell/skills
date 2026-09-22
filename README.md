@@ -28,6 +28,15 @@ npx skills@latest add joe-bell/skills
 
 ## Reference
 
+### Anorak
+
+Being particular about the details.
+
+- [**anorak-css**](./skills/anorak-css/SKILL.md) — Ordering CSS declarations, Tailwind class lists and `@apply` rules
+- [**anorak-print-width**](./skills/anorak-print-width/SKILL.md) — Leaving line wrapping to Prettier
+
+### Web
+
 - [**apple-web-app**](./skills/apple-web-app/SKILL.md) — Building web apps on iOS, iPadOS and macOS
 
 ## License
