@@ -5,7 +5,7 @@ metadata:
   source: hand-maintained by Joe Bell; derived from the public Letterboxd RSS feed
   reviewed: "2026-09-22 against four live letterboxd.com RSS feeds"
   upstream: "https://github.com/joe-bell/skills/tree/main/skills/letterboxd-diary"
-  version: "2026-09-22.7"
+  version: "2026-09-22.8"
 allowed-tools: Bash(curl -sSf https://letterboxd.com/:*) WebFetch(domain:letterboxd.com)
 ---
 
@@ -40,23 +40,64 @@ username written into `SKILL.md` is lost the next time the skill updates, and
 leaks if the install is shared. Do not create config files inside the skill
 directory either, for the same reason.
 
-An unknown username returns HTTP 404, so `curl -f` exits non-zero. Treat that
-as a wrong username: say which one was tried and ask for the right one, and do
-not guess variations.
+An unknown username returns HTTP 404, and `curl -f` then exits non-zero with a
+message naming the 404. **Read the message, not the exit code** — the same 404
+exits 22 over HTTP/1.1 and 56 over HTTP/2. Source: curl 8.7.1, observed
+2026-09-22. Treat it as a wrong username: say which one was tried and ask for
+the right one, and do not guess variations. A non-zero exit that does not
+mention a 404 is a network problem rather than a bad username — see section 2.
 
 ## 2. Source
 
 - Feed: `https://letterboxd.com/<username>/rss/`
 - Fetch it fresh every time; the diary changes often.
-- **Prefer a raw fetch** where a shell is available:
 
-  ```
-  curl -sSf https://letterboxd.com/<username>/rss/
-  ```
+### Retrieval ladder
 
-  A fetch tool that converts pages to markdown can drop the namespaced
-  `letterboxd:*` elements this skill parses. Fall back to the host's fetch tool
-  only when there is no shell.
+Hosts differ in what may reach the network, and a host that blocks one route
+usually still has another. Try these in order, allow each rung **one** attempt,
+and move down on failure. Never retry a rung that has already failed, and never
+go back up.
+
+1. **A shell, with curl.** The fast path, and the only one that returns the XML
+   untouched.
+
+   ```
+   curl -sSf https://letterboxd.com/<username>/rss/
+   ```
+
+   A non-zero exit naming a 404 is a wrong username — section 1. Any other
+   non-zero exit means the host cannot reach letterboxd.com, typically a
+   sandbox whose network allowlist omits the domain. Drop to rung 2 and say so
+   once at the end.
+
+2. **The host's fetch tool**, if it has one. Two failures, both of which mean
+   moving on rather than rephrasing the call:
+   - It refuses the URL because the URL came from this file. Some hosts only
+     fetch URLs the user typed or an earlier result returned, and a skill file
+     does not count. Source: observed in a Claude Desktop local-agent session,
+     2026-09-22.
+   - It converts the page to markdown and drops the namespaced `letterboxd:*`
+     elements section 3 parses.
+
+3. **A browser tool**, if the host has one — an in-app browser pane or a
+   browser extension. Navigate to the feed URL and read the page text. Browsers
+   serve the feed as plain XML source with every namespaced element intact, so
+   section 3 parses it unchanged. A full 50-entry feed runs to roughly 45 KB, so
+   raise any character limit the read offers rather than parsing a truncated
+   feed. Source: `letterboxd.com` RSS feed read through a browser pane,
+   2026-09-22.
+
+**Never web-search for the feed, and never search for a way to reach it.**
+Search engines do not index RSS feeds, so a search spends a round trip and
+returns nothing usable. Rung 3 is the answer to a blocked rung 1.
+
+### When the shell is blocked
+
+If the films came from rung 2 or 3, add one line after them saying the shell
+could not reach `letterboxd.com`, and that allowing that domain in the host's
+network settings restores the fast path. Once per conversation, not once per
+request.
 
 The feed is newest-first by publish date and carries a fixed window. Section 4
 says what that window actually covers — it is not simply "the last 50 things".
@@ -80,6 +121,9 @@ diary is empty rather than reporting an error.
 - Some hosts split `allowed-tools` on spaces, which would break the curl entry.
   If it isn't honoured, that's why — the skill still works, it just asks for
   permission first.
+- Rung 3 of the ladder is deliberately not listed. Browser tools are named
+  differently on every host, so pre-approving one would be a guess; expect a
+  permission prompt there.
 
 ## 3. Parsing
 
