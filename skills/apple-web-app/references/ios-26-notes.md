@@ -72,6 +72,11 @@ Source: Firtman; WebKit, retained historical guidance in
   renders a transparent status bar on that build.
 - WebKit bug 259770 (`interactive-widget=resizes-content`) is still open, so
   keyboard handling stays a `visualViewport` job.
+- **Address bar over the keyboard.** In a Safari tab the compact address bar
+  floats just above the software keyboard and covers whatever sits there, such
+  as a dialog or sheet footer (iOS 26.5 Simulator, 2026-09-23). Not yet
+  investigated: whether `visualViewport` excludes it, and how to keep content
+  clear of it.
 
 Startup-image selection and refresh questions are tracked in
 [splash-screens.md](splash-screens.md). These remain unverified; that work queue

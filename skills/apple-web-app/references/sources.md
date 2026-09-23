@@ -51,7 +51,9 @@ Format: **Author — Title (date) — URL** — what this skill took from it.
 - **Joe Bell — a production Tailwind v4 app (2025, private)** — the Tailwind
   v4 reference's spellings come from the same production app.
 - **Tailwind CSS — v4 documentation (`@utility`, `@custom-variant`, `--value()`)** —
-  https://tailwindcss.com/docs — syntax for the Tailwind v4 reference.
+  https://tailwindcss.com/docs — syntax for the Tailwind v4 reference, and the
+  `content: ''` that the `before` and `after` variants add by default
+  (https://tailwindcss.com/docs/hover-focus-and-other-states).
 
 ## iOS PWA behaviour
 
