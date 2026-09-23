@@ -72,13 +72,13 @@ Source: Firtman; WebKit, retained historical guidance in
   renders a transparent status bar on that build.
 - WebKit bug 259770 (`interactive-widget=resizes-content`) is still open, so
   keyboard handling stays a `visualViewport` job.
-- **Edge sampling on a device.** The model in
+- **Edge sampling on iOS 26.x hardware.** The model in
   [theme-color-and-status-bar.md](theme-color-and-status-bar.md) is
-  source-derived and observed in Simulator only (26.5 23F77, 27.0 24A434,
-  2026-09-22), so it is **Unverified** on a device.
-  Confirm the 90% width, ~6px depth and sticky-header behaviour on hardware,
-  and check whether `position: fixed` still clips on 26.0.x before choosing
-  between the absolute and fixed backdrop recipes.
+  source-derived, Simulator-observed on 26.5 23F77 and 27.0 24A434
+  (2026-09-22), and verified on an iPhone 17 Pro with iOS 27.0 (2026-09-23).
+  It is **Unverified** on an iOS 26.x device. Also check whether
+  `position: fixed` still clips on 26.0.x before choosing between the absolute
+  and fixed backdrop recipes.
 
 Startup-image selection and refresh questions are tracked in
 [splash-screens.md](splash-screens.md). These remain unverified; that work queue

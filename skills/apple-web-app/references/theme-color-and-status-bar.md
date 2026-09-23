@@ -53,13 +53,16 @@ WebKit's source states the rule. For the top and bottom edges separately:
 10. The bottom band only takes a tint when the page uses `viewport-fit=cover`.
 
 Source: WebKit `LocalFrameView::fixedContainerEdges`; Joe Bell (iOS Simulator
-26.5 23F77 and 27.0 24A434, 2026-09-22); Larionov for item 10; the
+26.5 23F77 and 27.0 24A434, 2026-09-22; verified iPhone 17 Pro, iOS 27.0,
+2026-09-23); Larionov for item 10; the
 `<html>` fallback chain from Fiquitiva and Nasedkin, in
 [sources.md](sources.md). Earlier community measurements (Frain; Fiquitiva)
 found the same shape; their ~80% width, ~3px height and "`opacity: 0` is still
-sampled" figures do not match the source or these runs. The measurements are
-Simulator observations and **Unverified** on a device; confirm there before
-depending on an exact value.
+sampled" figures do not match the source or these runs. On an iPhone 17 Pro
+with iOS 27.0 the fixed/absolute split, the width (92% used, 80% not), depth
+(6px used, 4px ignored), centred-pill, sticky-header, `::backdrop`, opacity
+and `pointer-events` cases all matched the Simulator. iOS 26.x is
+**Unverified** on a device.
 
 ### Pitfalls
 
@@ -188,7 +191,8 @@ be the element sampling finds:
   rather than fading with it.
 
 Source: WebKit; Joe Bell (iOS Simulator 26.5 23F77 and 27.0 24A434,
-2026-09-22; **Unverified** on a device), in [sources.md](sources.md).
+2026-09-22; verified iPhone 17 Pro, iOS 27.0, 2026-09-23), in
+[sources.md](sources.md).
 
 ## macOS
 

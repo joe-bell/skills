@@ -34,6 +34,14 @@ Format: **Author — Title (date) — URL** — what this skill took from it.
   `A: opacity 0 → skipped; opacity .5 → full colour; theme-color → ignored; <body> green → band green`;
   `A: sticky header, then dim → strip keeps header colour; plus 24px fixed edge strip → dimmed; native <dialog> → keeps header colour`;
   `A: transparent full-width pointer-events:none bar over a pointer-events:none dim → page background`.
+  Device-verified on 2026-09-23 with an iPhone 17 Pro on iOS 27.0 (build not
+  recorded), Safari tab, `viewport-fit=cover`, matching the Simulator in every
+  case:
+  `A: fixed dim → both bands dimmed; absolute → neither`;
+  `A: 92% wide → used; 80% → page background; 6px deep → used; 4px → ignored`;
+  `A: dark pill at bottom centre over the dim → bottom band page background`;
+  `A: sticky header, then dim → strip keeps header colour; native <dialog> → both bands dimmed`;
+  `A: opacity .05 → skipped; opacity .15 → full colour; transparent full-width pointer-events:none bar over the dim → page background`.
 - **Joe Bell — a production Tailwind v4 app (2025, private)** — the Tailwind
   v4 reference's spellings come from the same production app.
 - **Tailwind CSS — v4 documentation (`@utility`, `@custom-variant`, `--value()`)** —
