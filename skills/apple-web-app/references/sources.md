@@ -28,20 +28,20 @@ Format: **Author — Title (date) — URL** — what this skill took from it.
   Spotlight show the same flat icon as the Dock. iOS Simulator on 2026-09-22,
   iPhone 17 Pro on iOS 26.5 (23F77) and iPhone 18 Pro on iOS 27.0 (24A434),
   Safari tab with `viewport-fit=cover`, identical on both:
-  `A: fixed inset-0 rgba(0,0,0,.2) dim → both bands dimmed; absolute → neither`;
+  `A: fixed inset-0 rgba(0,0,0,.2) dim → both bars dimmed; absolute → neither`;
   `A: 90% wide → used; 80% → page background; 30% centred → page background; 30% off-centre → ignored`;
   `A: 4px deep → ignored; 5px → page background; 6px → used; raised 1px → used; raised 4px → ignored`;
-  `A: opacity 0 → skipped; opacity .5 → full colour; theme-color → ignored; <body> green → band green`;
-  `A: sticky header, then fixed dim → strip keeps header colour; plus 24px fixed edge strip → dimmed`;
-  `A: native <dialog> alone → both bands dimmed; sticky header, then native <dialog> → strip keeps header colour`;
+  `A: opacity 0 → skipped; opacity .5 → full colour; theme-color → ignored; <body> green → bars green`;
+  `A: sticky header, then fixed dim → status bar keeps header colour; plus 24px fixed edge strip → dimmed`;
+  `A: native <dialog> alone → both bars dimmed; sticky header, then native <dialog> → status bar keeps header colour`;
   `A: transparent full-width pointer-events:none bar over a pointer-events:none dim → page background`.
   Device-verified on 2026-09-23 with an iPhone 17 Pro on iOS 27.0 (build not
   recorded), Safari tab, `viewport-fit=cover`, matching the Simulator in every
   case:
-  `A: fixed dim → both bands dimmed; absolute → neither`;
+  `A: fixed dim → both bars dimmed; absolute → neither`;
   `A: 92% wide → used; 80% → page background; 6px deep → used; 4px → ignored`;
-  `A: dark pill at bottom centre over the dim → bottom band page background`;
-  `A: sticky header, then fixed dim → strip keeps header colour; native <dialog> alone → both bands dimmed (not tried over a sticky header)`;
+  `A: dark pill at bottom centre over the dim → address bar page background`;
+  `A: sticky header, then fixed dim → status bar keeps header colour; native <dialog> alone → both bars dimmed (not tried over a sticky header)`;
   `A: opacity .05 → skipped; opacity .15 → full colour; transparent full-width pointer-events:none bar over the dim → page background`.
 - **Joe Bell — a production Tailwind v4 app (2025, private)** — the Tailwind
   v4 reference's spellings come from the same production app.

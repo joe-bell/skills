@@ -127,9 +127,9 @@ Spectrum; listener lifecycle adapted during this repository's snippet review.
 }
 ```
 
-**This backdrop never reaches Safari's status-bar strip or toolbar band.** Edge
+**This backdrop never reaches Safari's status bar or address bar.** Edge
 sampling only hits fixed and sticky layers, so an absolute backdrop dims the
-page and leaves both bands at the page background, however tall it is. For a
+page and leaves both bars at the page background, however tall it is. For a
 dim that fills the whole screen, paint it with `position: fixed; inset: 0` —
 recipe D in [theme-color-and-status-bar.md](theme-color-and-status-bar.md). In
 the Simulator runs below that fixed dim also covered the scrolled page; whether

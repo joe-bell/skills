@@ -1,11 +1,11 @@
 ---
 name: apple-web-app
-description: "Use when implementing, debugging, or auditing how any website or web app looks and behaves on iPhone and iPad — in Safari or added to the Home Screen — or added to the Mac Dock from Safari: safe areas, Safari's status-bar and toolbar tinting, full-screen overlays, theme colour, keyboard, manifest, icons, splash screens, or installed navigation. Not for service workers, offline caching, or push."
+description: "Use when implementing, debugging, or auditing how any website or web app looks and behaves on iPhone and iPad — in Safari or added to the Home Screen — or added to the Mac Dock from Safari: safe areas, Safari's status bar and address bar tinting, full-screen overlays, theme colour, keyboard, manifest, icons, splash screens, or installed navigation. Not for service workers, offline caching, or push."
 metadata:
   source: hand-maintained by Joe Bell; derived from a production home-screen web app plus credited external sources
   reviewed: "2026-09-04 against iOS 26.x, macOS 26 / Safari 26"
   upstream: "https://github.com/joe-bell/skills/tree/main/skills/apple-web-app"
-  version: "2026-09-23.2"
+  version: "2026-09-23.3"
 ---
 
 # Websites and web apps on Apple devices

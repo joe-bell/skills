@@ -18,9 +18,10 @@ pixels. Choosing it means every top-anchored element needs
 
 ## Safari 26 colour sampling
 
-Safari 26 does not honour `<meta name="theme-color">` for the strip above the
-page or the toolbar band below it. It fills each band from the page, and
-WebKit's source states the rule. For the top and bottom edges separately:
+Safari 26 does not honour `<meta name="theme-color">` for the status bar above
+the page or the address bar below it (Safari's default bottom tab layout). It
+colours each bar from the page, and WebKit's source states the rule. For the top
+and bottom edges separately:
 
 1. Hit-test one point: the horizontal centre of the edge, 4px inside it. Only
    `position: fixed` and `position: sticky` elements and their contents are
@@ -42,16 +43,16 @@ WebKit's source states the rule. For the top and bottom edges separately:
    not over the pixels actually beneath it. So is a dimming layer: a fixed
    element covering at least 90% of the viewport both ways, with a translucent
    background and no children.
-6. With nothing qualifying, the band is the page background: `<body>`'s
+6. With nothing qualifying, the bar is the page background: `<body>`'s
    `background-color` (it won over `<html>`'s with both set); `<html>`'s, then
    white or black, when `<body>` is transparent.
 7. A full-viewport overlay keeps the edge's existing colour when one is already
    set. A dialog opened over a page whose sticky header tints the top leaves
-   the strip at the header's colour above the dimmed page.
+   the status bar at the header's colour above the dimmed page.
 8. A `::backdrop` (native `<dialog>`, popover) counts as a dimming layer.
 9. If the walk found only skipped `pointer-events: none` layers, Safari retries
    honouring `pointer-events`, which also skips a `pointer-events: none` dim.
-10. The bottom band only takes a tint when the page uses `viewport-fit=cover`.
+10. The address bar only takes a tint when the page uses `viewport-fit=cover`.
 
 Source: WebKit `LocalFrameView::fixedContainerEdges`; Joe Bell (iOS Simulator
 26.5 23F77 and 27.0 24A434, 2026-09-22; verified iPhone 17 Pro, iOS 27.0,
@@ -70,21 +71,21 @@ but was not tried on the device. No iOS 26 device was checked.
 ### Pitfalls
 
 - **Paint dims with `position: fixed`.** An absolutely positioned backdrop is
-  never hit, however large, so both bands stay at the page background above a
+  never hit, however large, so both bars stay at the page background above a
   dimmed page.
 - **Keep narrow fixed UI off the centre of an edge.** A floating toolbar, a
-  toast or a framework dev toolbar fixed at `bottom: 0` takes that band over
+  toast or a framework dev toolbar fixed at `bottom: 0` takes that bar over
   and leaves it at the page background. Raise it at least 4px or keep it off
   the centre line.
 - **An empty full-width `pointer-events: none` layer above a dim** (a portal
   root, a toast container) triggers the retry in item 9 and hides a
   `pointer-events: none` dim. Give the layer no size, or let the dim take
   pointer events.
-- **Sticky headers keep the strip when a dialog opens** (item 7). While the
-  dialog is open, show a full-width fixed strip at the edge, more than 10px
-  deep (24px tested), with the dim's background: it is an ordinary candidate,
-  so it replaces the stored colour. The band then shows the dim over the page
-  background, not over the header; give the strip the header colour with the
+- **Sticky headers keep the status bar colour when a dialog opens** (item 7).
+  While the dialog is open, show a full-width fixed strip at the top edge, more
+  than 10px deep (24px tested), with the dim's background: it is an ordinary
+  candidate, so it replaces the stored colour. The status bar then shows the dim
+  over the page background, not over the header; give the strip the header colour with the
   dim already applied, opaque, if the two must match.
 - `display: none` remains the safe way to park an overlay. `opacity` below 0.1
   and `visibility: hidden` are skipped in the source, and `opacity: 0.05` was
@@ -161,10 +162,10 @@ body {
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1c1917" />
 ```
 
-### D. A dim that reaches both Safari bands
+### D. A dim that reaches the status bar and address bar
 
 The page viewport stops short of the screen in a Safari tab — 714pt of 874 on
-an iPhone 17 Pro — and the strip above it and the toolbar band below it are
+an iPhone 17 Pro — and the status bar above it and the address bar below it are
 Safari's. A dialog's dim only reaches them through edge sampling, so it has to
 be the element sampling finds:
 
@@ -181,16 +182,16 @@ be the element sampling finds:
 ```
 
 - `position: fixed`, never `absolute`: an absolute dim, however tall, dims the
-  page and leaves both bands at the page background.
+  page and leaves both bars at the page background.
 - `inset: 0` alone sizes it; `min-height: 100dvh` or a page-height variable
-  adds nothing to the bands.
+  adds nothing to the bars.
 - Nothing narrower than 90% fixed on the centre of either edge above it, and no
   empty full-width `pointer-events: none` layer above a `pointer-events: none`
   dim.
 - A page whose sticky header already tints the top keeps that tint: add the
   edge strip from Pitfalls while the dialog is open.
-- Fades work, but the bands do not fade with them: sampling ignores `opacity`
-  from 0.1 up, so each band switches colour as the fade crosses 0.1.
+- Fades work, but the bars do not fade with them: sampling ignores `opacity`
+  from 0.1 up, so each bar switches colour as the fade crosses 0.1.
 
 Source: WebKit; Joe Bell (iOS Simulator 26.5 23F77 and 27.0 24A434,
 2026-09-22; verified iPhone 17 Pro, iOS 27.0, 2026-09-23), in
