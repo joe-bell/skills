@@ -1,4 +1,4 @@
-# iOS 26.x notes for standalone web apps
+# iOS 26.x notes for web apps
 
 **Feature-detect, don't version-sniff.** Every entry below is a moving target:
 Apple has fixed, re-broken and re-fixed several of these within point releases.
@@ -72,13 +72,6 @@ Source: Firtman; WebKit, retained historical guidance in
   renders a transparent status bar on that build.
 - WebKit bug 259770 (`interactive-widget=resizes-content`) is still open, so
   keyboard handling stays a `visualViewport` job.
-- **Edge sampling on iOS 26.x hardware.** The model in
-  [theme-color-and-status-bar.md](theme-color-and-status-bar.md) is
-  source-derived, Simulator-observed on 26.5 23F77 and 27.0 24A434
-  (2026-09-22), and verified on an iPhone 17 Pro with iOS 27.0 (2026-09-23).
-  It is **Unverified** on an iOS 26.x device. Also check whether
-  `position: fixed` still clips on 26.0.x before choosing between the absolute
-  and fixed backdrop recipes.
 
 Startup-image selection and refresh questions are tracked in
 [splash-screens.md](splash-screens.md). These remain unverified; that work queue

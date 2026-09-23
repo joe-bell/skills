@@ -25,7 +25,7 @@ WebKit's source states the rule. For the top and bottom edges separately:
 1. Hit-test one point: the horizontal centre of the edge, 4px inside it. Only
    `position: fixed` and `position: sticky` elements and their contents are
    hit; other page content, including `absolute` elements outside them, never
-   is. CSS `pointer-events` is ignored.
+   is. CSS `pointer-events` is ignored, except in the retry in item 9.
 2. Walk up from the hit element to the first fixed or sticky ancestor (or the
    element itself) that qualifies. Nothing beneath the hit element is
    considered, so a narrow fixed element at the centre point hides a
@@ -38,9 +38,10 @@ WebKit's source states the rule. For the top and bottom edges separately:
    both dimensions. A smaller one is sampled from a 2px strip 4–6px inside the
    edge, so an edge bar needs to be about 6px deep to count. The element's own
    `opacity` is not applied to the colour; below 0.1 it is skipped instead.
-5. A colour with alpha below 0.75, or any full-viewport dimming layer, is
-   blended over the page background colour — not over the pixels actually
-   beneath it.
+5. A colour with alpha below 0.75 is blended over the page background colour —
+   not over the pixels actually beneath it. So is a dimming layer: a fixed
+   element covering at least 90% of the viewport both ways, with a translucent
+   background and no children.
 6. With nothing qualifying, the band is the page background: `<body>`'s
    `background-color` (it won over `<html>`'s with both set); `<html>`'s, then
    white or black, when `<body>` is transparent.
@@ -59,10 +60,12 @@ Source: WebKit `LocalFrameView::fixedContainerEdges`; Joe Bell (iOS Simulator
 [sources.md](sources.md). Earlier community measurements (Frain; Fiquitiva)
 found the same shape; their ~80% width, ~3px height and "`opacity: 0` is still
 sampled" figures do not match the source or these runs. On an iPhone 17 Pro
-with iOS 27.0 the fixed/absolute split, the width (92% used, 80% not), depth
-(6px used, 4px ignored), centred-pill, sticky-header, `::backdrop`, opacity
-and `pointer-events` cases all matched the Simulator. iOS 26.x is
-**Unverified** on a device.
+with iOS 27.0 these matched the Simulator: the fixed/absolute split, width
+(92% used, 80% not), depth (6px used, 4px ignored), the centred pill, a fixed
+dim over a sticky header (item 7), a native `<dialog>` on a plain page, and
+the opacity and `pointer-events` cases. A native `<dialog>` over a sticky
+header kept the header's colour in the Simulator, as items 7 and 8 predict,
+but was not tried on the device. No iOS 26 device was checked.
 
 ### Pitfalls
 
@@ -84,8 +87,8 @@ and `pointer-events` cases all matched the Simulator. iOS 26.x is
   background, not over the header; give the strip the header colour with the
   dim already applied, opaque, if the two must match.
 - `display: none` remains the safe way to park an overlay. `opacity` below 0.1
-  and `visibility: hidden` are skipped in the source and in these Simulator
-  runs, but Frain observed `opacity: 0` sampled earlier in 26.x.
+  and `visibility: hidden` are skipped in the source, and `opacity: 0.05` was
+  skipped on iOS 27.0, but Frain observed `opacity: 0` sampled earlier in 26.x.
 - A header that "looks" coloured because the page behind it is coloured has no
   `background-color` of its own, so sampling falls through to `<body>`. That is
   fine if they match — and breaks the moment you add dark mode.
@@ -186,9 +189,8 @@ be the element sampling finds:
   dim.
 - A page whose sticky header already tints the top keeps that tint: add the
   edge strip from Pitfalls while the dialog is open.
-- Opacity transitions are fine: sampling ignores the element's `opacity` once
-  it reaches 0.1, so each band switches colour as the fade crosses that value
-  rather than fading with it.
+- Fades work, but the bands do not fade with them: sampling ignores `opacity`
+  from 0.1 up, so each band switches colour as the fade crosses 0.1.
 
 Source: WebKit; Joe Bell (iOS Simulator 26.5 23F77 and 27.0 24A434,
 2026-09-22; verified iPhone 17 Pro, iOS 27.0, 2026-09-23), in
