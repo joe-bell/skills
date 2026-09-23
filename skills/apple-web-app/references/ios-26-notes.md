@@ -116,19 +116,20 @@ exposes a computed value, not proof that future layout changes are over. See
 
 ## Problem → fix → source
 
-| Problem                                                   | Fix                                                                          | Source                                 |
-| :-------------------------------------------------------- | :--------------------------------------------------------------------------- | :------------------------------------- |
-| Backdrop doesn't cover scrolled page (26.0)               | Absolute backdrop sized to `scrollingElement`; sticky dialog                 | React Spectrum PR #8888                |
-| Opaque overlay doesn't fill (26.0)                        | `opacity: 0.99`                                                              | Lunardi                                |
-| `100dvh` gap (26.0)                                       | Use `100vh`; fixed in 26.1                                                   | Apple forums 800798; Safari 26.1 notes |
-| Status bar tint ignores `theme-color` (26.0+)             | Give edge-touching fixed/sticky element a real background                    | Frain, Fiquitiva et al.                |
-| Hidden overlay tints the status bar                       | `display: none`, not `opacity: 0`                                            | Frain                                  |
-| Dialog dims the page but not Safari's bars                | Paint the dim `position: fixed`; keep narrow fixed UI off the edge centre    | WebKit; Joe Bell                       |
-| Dialog over a sticky header leaves the status bar bright  | Full-width fixed edge strip with the dim colour while open                   | WebKit; Joe Bell                       |
-| Status bar opaque, top inset `0px` (26.1; back on 26.5.2) | Layout must be valid at inset `0px`; fixed in 26.2, re-regressed later       | WebKit 301994                          |
-| Rubber-banding behind fixed bars                          | `overscroll-behavior-y: contain` in a stylesheet                             | React Spectrum PR #8888                |
-| Keyboard covers focused field                             | `visualViewport` height variable + manual scroll                             | React Spectrum                         |
-| iPad window controls cover top-left chrome (iPadOS 26)    | Pad when not full screen; `env()` won't tell you                             | Reinhart Previano K.                   |
-| Header jumps on cold launch                               | Visible zero-inset layout; evaluate `100vh` if the height symptom reproduces | fozzedout; repo experience (Joe Bell)  |
+| Problem                                                         | Fix                                                                          | Source                                 |
+| :-------------------------------------------------------------- | :--------------------------------------------------------------------------- | :------------------------------------- |
+| Backdrop doesn't cover scrolled page (26.0)                     | Absolute backdrop sized to `scrollingElement`; sticky dialog                 | React Spectrum PR #8888                |
+| Opaque overlay doesn't fill (26.0)                              | `opacity: 0.99`                                                              | Lunardi                                |
+| `100dvh` gap (26.0)                                             | Use `100vh`; fixed in 26.1                                                   | Apple forums 800798; Safari 26.1 notes |
+| Status bar tint ignores `theme-color` (26.0+)                   | Give edge-touching fixed/sticky element a real background                    | Frain, Fiquitiva et al.                |
+| Hidden overlay tints the status bar                             | `display: none`, not `opacity: 0`                                            | Frain                                  |
+| Dialog dims the page but not Safari's bars                      | Paint the dim `position: fixed`; keep narrow fixed UI off the edge centre    | WebKit; Joe Bell                       |
+| Dialog over a sticky header leaves the status bar bright        | Full-width fixed edge strip with the dim colour while open                   | WebKit; Joe Bell                       |
+| Transparent backdrop over a separate dim leaves the bars bright | Give it an empty `::after { content: "" }`                                   | WebKit; Joe Bell                       |
+| Status bar opaque, top inset `0px` (26.1; back on 26.5.2)       | Layout must be valid at inset `0px`; fixed in 26.2, re-regressed later       | WebKit 301994                          |
+| Rubber-banding behind fixed bars                                | `overscroll-behavior-y: contain` in a stylesheet                             | React Spectrum PR #8888                |
+| Keyboard covers focused field                                   | `visualViewport` height variable + manual scroll                             | React Spectrum                         |
+| iPad window controls cover top-left chrome (iPadOS 26)          | Pad when not full screen; `env()` won't tell you                             | Reinhart Previano K.                   |
+| Header jumps on cold launch                                     | Visible zero-inset layout; evaluate `100vh` if the height symptom reproduces | fozzedout; repo experience (Joe Bell)  |
 
 Full citations: [sources.md](sources.md).
