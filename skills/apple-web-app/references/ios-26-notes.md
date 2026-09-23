@@ -1,4 +1,4 @@
-# iOS 26.x notes for standalone web apps
+# iOS 26.x notes for web apps
 
 **Feature-detect, don't version-sniff.** Every entry below is a moving target:
 Apple has fixed, re-broken and re-fixed several of these within point releases.
@@ -26,7 +26,10 @@ Source: Firtman; WebKit, retained historical guidance in
 - **`position: fixed` is clipped to the inner viewport.** Full-page backdrops
   and overlays stop covering the page once it scrolls. Fix: size the backdrop
   absolutely from `document.scrollingElement.scrollWidth/scrollHeight` and
-  centre the dialog with `position: sticky`.
+  centre the dialog with `position: sticky`. Not reproduced on iOS Simulator
+  26.5 23F77 or 27.0 24A434 (2026-09-22), where a `fixed; inset: 0` layer
+  covered the scrolled page and Safari's status bar and address bar; an
+  absolute backdrop cannot tint either bar at all. Source: Joe Bell.
 - **Fully opaque fixed overlays don't fill the viewport.** Any transparency at
   all (`opacity: 0.99`) restores correct behaviour. Source: Edoardo Lunardi.
 - **`100dvh` leaves a gap** at the bottom on layouts with viewport-sized fixed
@@ -120,6 +123,8 @@ exposes a computed value, not proof that future layout changes are over. See
 | `100dvh` gap (26.0)                                       | Use `100vh`; fixed in 26.1                                                   | Apple forums 800798; Safari 26.1 notes |
 | Status bar tint ignores `theme-color` (26.0+)             | Give edge-touching fixed/sticky element a real background                    | Frain, Fiquitiva et al.                |
 | Hidden overlay tints the status bar                       | `display: none`, not `opacity: 0`                                            | Frain                                  |
+| Dialog dims the page but not Safari's bars                | Paint the dim `position: fixed`; keep narrow fixed UI off the edge centre    | WebKit; Joe Bell                       |
+| Dialog over a sticky header leaves the status bar bright  | Full-width fixed edge strip with the dim colour while open                   | WebKit; Joe Bell                       |
 | Status bar opaque, top inset `0px` (26.1; back on 26.5.2) | Layout must be valid at inset `0px`; fixed in 26.2, re-regressed later       | WebKit 301994                          |
 | Rubber-banding behind fixed bars                          | `overscroll-behavior-y: contain` in a stylesheet                             | React Spectrum PR #8888                |
 | Keyboard covers focused field                             | `visualViewport` height variable + manual scroll                             | React Spectrum                         |

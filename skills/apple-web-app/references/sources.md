@@ -25,7 +25,24 @@ Format: **Author — Title (date) — URL** — what this skill took from it.
   (both `_blank` and same-window) open the default browser while `window.open`
   stays in the app. Second run the same day: the title-bar snapshot reads
   `<body>` background, not manifest `background_color`; the Apps view and
-  Spotlight show the same flat icon as the Dock.
+  Spotlight show the same flat icon as the Dock. iOS Simulator on 2026-09-22,
+  iPhone 17 Pro on iOS 26.5 (23F77) and iPhone 18 Pro on iOS 27.0 (24A434),
+  Safari tab with `viewport-fit=cover`, identical on both:
+  `A: fixed inset-0 rgba(0,0,0,.2) dim → both bars dimmed; absolute → neither`;
+  `A: 90% wide → used; 80% → page background; 30% centred → page background; 30% off-centre → ignored`;
+  `A: 4px deep → ignored; 5px → page background; 6px → used; raised 1px → used; raised 4px → ignored`;
+  `A: opacity 0 → skipped; opacity .5 → full colour; theme-color → ignored; <body> green → bars green`;
+  `A: sticky header, then fixed dim → status bar keeps header colour; plus 24px fixed edge strip → dimmed`;
+  `A: native <dialog> alone → both bars dimmed; sticky header, then native <dialog> → status bar keeps header colour`;
+  `A: transparent full-width pointer-events:none bar over a pointer-events:none dim → page background`.
+  Device-verified on 2026-09-23 with an iPhone 17 Pro on iOS 27.0 (build not
+  recorded), Safari tab, `viewport-fit=cover`, matching the Simulator in every
+  case:
+  `A: fixed dim → both bars dimmed; absolute → neither`;
+  `A: 92% wide → used; 80% → page background; 6px deep → used; 4px → ignored`;
+  `A: dark pill at bottom centre over the dim → address bar page background`;
+  `A: sticky header, then fixed dim → status bar keeps header colour; native <dialog> alone → both bars dimmed (not tried over a sticky header)`;
+  `A: opacity .05 → skipped; opacity .15 → full colour; transparent full-width pointer-events:none bar over the dim → page background`.
 - **Joe Bell — a production Tailwind v4 app (2025, private)** — the Tailwind
   v4 reference's spellings come from the same production app.
 - **Tailwind CSS — v4 documentation (`@utility`, `@custom-variant`, `--value()`)** —
@@ -98,6 +115,14 @@ documentation; thresholds are approximate.
   https://benfrain.com/ios26-safari-theme-color-tab-tinting-with-fixed-position-elements/
   — Safari 26 ignoring `theme-color`; edge-touching fixed/sticky element
   sampling; `opacity: 0` elements still being sampled (use `display: none`).
+- **WebKit — `LocalFrameView::fixedContainerEdges` (trunk d3afea7,
+  2026-09-22)** —
+  https://github.com/WebKit/WebKit/blob/d3afea7d89fd2b062ef39b644c3f026dc4904070/Source/WebCore/page/LocalFrameView.cpp
+  — the edge-sampling algorithm: one hit-test at the edge's centre 4px inside
+  it, fixed/sticky ancestors only, the 90% width ratio, the 10px border-box
+  rule and 2px sample strip, blending below 0.75 alpha, dimming-layer and
+  `::backdrop` handling, the existing-colour preference and the
+  `pointer-events` retry.
 - **Jahir Fiquitiva — "Safari toolbar" (2026-03-02)** —
   https://jahir.dev/blog/safari-toolbar — sampling thresholds (width ≥ ~80%,
   height ≥ ~3px, within ~4px of the top / ~3px of the bottom) and the
