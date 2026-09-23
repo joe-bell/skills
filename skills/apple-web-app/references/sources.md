@@ -47,7 +47,8 @@ Format: **Author — Title (date) — URL** — what this skill took from it.
   (device) also on the same iPhone 17 Pro with iOS 27.0:
   `A: no viewport-fit=cover, fixed dim → both bars dimmed (device)`;
   `A: empty transparent full-screen pointer-events:auto layer over the dim → page background (device); with an empty ::before → both bars dimmed (device)`;
-  `A: same layer added after the dim → both bars stay dimmed; pointer-events:none layer over a pointer-events:auto dim → both bars dimmed`.
+  `A: same layer added after the dim → both bars stay dimmed; pointer-events:none layer over a pointer-events:auto dim → both bars dimmed`;
+  `A: text field focused in a dialog or bottom sheet near the keyboard → compact address bar floats above the keyboard and covers the footer (Simulator only)`.
 - **Joe Bell — a production Tailwind v4 app (2025, private)** — the Tailwind
   v4 reference's spellings come from the same production app.
 - **Tailwind CSS — v4 documentation (`@utility`, `@custom-variant`, `--value()`)** —

@@ -74,9 +74,10 @@ Source: Firtman; WebKit, retained historical guidance in
   keyboard handling stays a `visualViewport` job.
 - **Address bar over the keyboard.** In a Safari tab the compact address bar
   floats just above the software keyboard and covers whatever sits there, such
-  as a dialog or sheet footer (iOS 26.5 Simulator, 2026-09-23). Not yet
-  investigated: whether `visualViewport` excludes it, and how to keep content
-  clear of it.
+  as a dialog or sheet footer. Not yet investigated: whether `visualViewport`
+  excludes it, and how to keep content clear of it. Source: Joe Bell (iOS
+  Simulator 26.5 23F77, 2026-09-23; Simulator only), in
+  [sources.md](sources.md).
 
 Startup-image selection and refresh questions are tracked in
 [splash-screens.md](splash-screens.md). These remain unverified; that work queue
