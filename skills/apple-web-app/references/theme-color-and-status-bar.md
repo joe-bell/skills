@@ -32,7 +32,8 @@ and bottom edges separately:
    considered, so a narrow fixed element at the centre point hides a
    qualifying one below it. `opacity` below 0.1, `visibility: hidden`, and
    elements with no background, no `backdrop-filter` and no children are
-   skipped; empty images, video, canvas and iframes are not.
+   skipped; an empty `::before` or `::after` counts as a child, and empty
+   images, video, canvas and iframes are not skipped either.
 3. A qualifying element spans at least 90% of the viewport width, measured
    after 4px is trimmed from each side (about 347px of a 393px viewport).
 4. Its `background-color` is used when its border box is more than 10px in
@@ -50,17 +51,23 @@ and bottom edges separately:
    set. A dialog opened over a page whose sticky header tints the top leaves
    the status bar at the header's colour above the dimmed page.
 8. A `::backdrop` (native `<dialog>`, popover) counts as a dimming layer.
-9. If the walk found only skipped `pointer-events: none` layers, Safari retries
-   honouring `pointer-events`, which also skips a `pointer-events: none` dim.
-10. The address bar only takes a tint when the page uses `viewport-fit=cover`.
+9. A skipped element still ends the search, because nothing beneath the hit
+   element is considered. An empty full-screen fixed layer above the dim
+   therefore leaves each bar the colour it already had: the page background if
+   the layer and the dim appear together, the dim if the layer arrives later.
+   The exception is a `pointer-events: none` layer, which makes Safari retry
+   honouring `pointer-events`; the retry reaches the dim only if the dim takes
+   pointer events.
+10. `viewport-fit=cover` is not needed: the address bar took the dim without
+    it.
 
 Source: WebKit `LocalFrameView::fixedContainerEdges`; Joe Bell (iOS Simulator
 26.5 23F77 and 27.0 24A434, 2026-09-22; verified iPhone 17 Pro, iOS 27.0,
-2026-09-23); Larionov for item 10; the
-`<html>` fallback chain from Fiquitiva and Nasedkin, in
-[sources.md](sources.md). Earlier community measurements (Frain; Fiquitiva)
-found the same shape; their ~80% width, ~3px height and "`opacity: 0` is still
-sampled" figures do not match the source or these runs. On an iPhone 17 Pro
+2026-09-23); the `<html>` fallback chain from Fiquitiva and Nasedkin, in
+[sources.md](sources.md). Earlier community measurements (Frain; Fiquitiva;
+Larionov) found the same shape; their ~80% width, ~3px height, "`opacity: 0`
+is still sampled" and "the bottom tint needs `viewport-fit=cover`" claims do
+not match the source or these runs. On an iPhone 17 Pro
 with iOS 27.0 these matched the Simulator: the fixed/absolute split, width
 (92% used, 80% not), depth (6px used, 4px ignored), the centred pill, a fixed
 dim over a sticky header (item 7), a native `<dialog>` on a plain page, and
@@ -77,10 +84,11 @@ but was not tried on the device. No iOS 26 device was checked.
   toast or a framework dev toolbar fixed at `bottom: 0` takes that bar over
   and leaves it at the page background. Raise it at least 4px or keep it off
   the centre line.
-- **An empty full-width `pointer-events: none` layer above a dim** (a portal
-  root, a toast container) triggers the retry in item 9 and hides a
-  `pointer-events: none` dim. Give the layer no size, or let the dim take
-  pointer events.
+- **An empty full-screen fixed layer above a dim hides it** (item 9). A
+  transparent press-target backdrop over a separately painted dim, a portal
+  root or a toast container all qualify. Give the layer an empty
+  pseudo-element (`::after { content: "" }`) so Safari samples the pixels
+  under it, which are the dim, or give it no size.
 - **Sticky headers keep the status bar colour when a dialog opens** (item 7).
   While the dialog is open, show a full-width fixed strip at the top edge, more
   than 10px deep (24px tested), with the dim's background: it is an ordinary
@@ -169,10 +177,6 @@ an iPhone 17 Pro — and the status bar above it and the address bar below it ar
 Safari's. A dialog's dim only reaches them through edge sampling, so it has to
 be the element sampling finds:
 
-```html
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-```
-
 ```css
 .dim {
   position: fixed;
@@ -186,8 +190,9 @@ be the element sampling finds:
 - `inset: 0` alone sizes it; `min-height: 100dvh` or a page-height variable
   adds nothing to the bars.
 - Nothing narrower than 90% fixed on the centre of either edge above it, and no
-  empty full-width `pointer-events: none` layer above a `pointer-events: none`
-  dim.
+  empty full-screen fixed layer above it; if one has to stay, give it an empty
+  `::after`.
+- `viewport-fit=cover` makes no difference to either bar.
 - A page whose sticky header already tints the top keeps that tint: add the
   edge strip from Pitfalls while the dialog is open.
 - Fades work, but the bars do not fade with them: sampling ignores `opacity`

@@ -43,10 +43,18 @@ Format: **Author — Title (date) — URL** — what this skill took from it.
   `A: dark pill at bottom centre over the dim → address bar page background`;
   `A: sticky header, then fixed dim → status bar keeps header colour; native <dialog> alone → both bars dimmed (not tried over a sticky header)`;
   `A: opacity .05 → skipped; opacity .15 → full colour; transparent full-width pointer-events:none bar over the dim → page background`.
+  Further runs on 2026-09-23 in the iOS 26.5 Simulator (23F77); those marked
+  (device) also on the same iPhone 17 Pro with iOS 27.0:
+  `A: no viewport-fit=cover, fixed dim → both bars dimmed (device)`;
+  `A: empty transparent full-screen pointer-events:auto layer over the dim → page background (device); with an empty ::before → both bars dimmed (device)`;
+  `A: same layer added after the dim → both bars stay dimmed; pointer-events:none layer over a pointer-events:auto dim → both bars dimmed`;
+  `A: text field focused in a dialog or bottom sheet near the keyboard → compact address bar floats above the keyboard and covers the footer (Simulator only)`.
 - **Joe Bell — a production Tailwind v4 app (2025, private)** — the Tailwind
   v4 reference's spellings come from the same production app.
 - **Tailwind CSS — v4 documentation (`@utility`, `@custom-variant`, `--value()`)** —
-  https://tailwindcss.com/docs — syntax for the Tailwind v4 reference.
+  https://tailwindcss.com/docs — syntax for the Tailwind v4 reference, and the
+  `content: ''` that the `before` and `after` variants add by default
+  (https://tailwindcss.com/docs/hover-focus-and-other-states).
 
 ## iOS PWA behaviour
 
@@ -131,8 +139,9 @@ documentation; thresholds are approximate.
   https://nasedk.in/blog/ios26-safari-toolbar-colors/ — corroboration of the
   fallback chain.
 - **Pavel Larionov — "Safari 26, Liquid Glass and the web" (2026-05-13)** —
-  https://1ar.io/updates/safari-26-liquid-glass-web/ — the
-  `viewport-fit=cover` requirement for the bottom tint.
+  https://1ar.io/updates/safari-26-liquid-glass-web/ — reported that the
+  bottom tint needs `viewport-fit=cover`; not reproduced in the iOS 26.5
+  Simulator or on an iPhone 17 Pro with iOS 27.0 (Joe Bell, 2026-09-23).
 - **thatdevpro — "HTML meta theme-color"** —
   https://www.thatdevpro.com/reference/html-meta-theme-color/ — current status
   of the meta tag across browsers.

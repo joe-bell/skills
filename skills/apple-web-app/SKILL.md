@@ -5,7 +5,7 @@ metadata:
   source: hand-maintained by Joe Bell; derived from a production home-screen web app plus credited external sources
   reviewed: "2026-09-04 against iOS 26.x, macOS 26 / Safari 26"
   upstream: "https://github.com/joe-bell/skills/tree/main/skills/apple-web-app"
-  version: "2026-09-23.3"
+  version: "2026-09-23.6"
 ---
 
 # Websites and web apps on Apple devices
