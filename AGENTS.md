@@ -15,16 +15,31 @@ Conventions for agents editing this skills repository.
 Before every commit, run:
 
 ```sh
-npx prettier@3 --check .
+npx prettier@3.9.9 --check .
 npx skill-check@1.2.0 check ./skills --no-security-scan --strict
 node --test tests/apple-web-app-snippets.test.mjs
 ```
 
-Fix formatting with `npx prettier@3 --write .`. Code fences are left as
+CI (`.github/workflows/ci.yml`) runs the same three commands on every pull
+request, and the `main` ruleset requires that `check` job.
+
+Fix formatting with `npx prettier@3.9.9 --write .`. Code fences are left as
 written (`embeddedLanguageFormatting: off` in `.prettierrc`).
 
 - A skill body must stay within 500 lines and 5,000 words.
 - Every local reference link must resolve. Do not use `#anchor` targets.
+
+## Merging and repo hygiene
+
+- **Only the maintainer merges.** The `main` ruleset restricts updates to the
+  maintainer (see [`.github/rulesets/README.md`](./.github/rulesets/README.md)).
+  Agents open pull requests and get them green; they never merge or enable
+  auto-merge.
+- **This repo is public, so everything written here is published.** Files,
+  commits, branch names, pull request titles and descriptions, and comments
+  must not mention the maintainer's private repositories, internal tooling,
+  automation, or plans. Describe the change itself and nothing about where it
+  came from.
 
 ## Style
 

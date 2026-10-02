@@ -1,0 +1,23 @@
+# GitHub Actions updates arrive as one grouped pull request a month (on the
+# 22nd). Security updates are unaffected: each advisory still opens its own
+# pull request straight away.
+#
+# - `cooldown` skips releases younger than seven days, a buffer against
+#   compromised or quickly yanked releases.
+# - `rebase-strategy: disabled` stops Dependabot rebasing the pull request
+#   after every merge to `main`; on a conflict, comment `@dependabot rebase`.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: cron
+      cronjob: "0 9 22 * *"
+    groups:
+      actions:
+        patterns: ["*"]
+    commit-message:
+      prefix: deps
+    cooldown:
+      default-days: 7
+    rebase-strategy: disabled
