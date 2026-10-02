@@ -14,6 +14,13 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      # `npx` installs each tool's dependencies fresh, without a lockfile.
+      # Skip any release younger than seven days (npm 11.10 or later, which
+      # Node 24 bundles), a buffer against compromised or quickly yanked
+      # releases. A pinned tool version younger than that fails the step.
+      NPM_CONFIG_MIN_RELEASE_AGE: 7
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
