@@ -81,6 +81,12 @@ Format: **Author — Title (date) — URL** — what this skill took from it.
 - **Revert to Saved (2025-06-13)** —
   https://reverttosaved.com/2025/06/13/ — the home indicator auto-hiding on
   iOS 26 while the bottom safe-area inset persists.
+- **OpenPWA — iOS Safari platform notes and Add to Home Screen guide** —
+  https://openpwa.net/reference/platforms/ios-safari/ and
+  https://openpwa.net/reference/installation/ios-add-to-home-screen/ — iOS
+  Safari behaviour notes and the manual install flow, alongside per-feature
+  compatibility tables (https://openpwa.net/compatibility/); every page is
+  also served as raw markdown, with https://openpwa.net/llms.txt as the index.
 
 ## Apple / WebKit
 
