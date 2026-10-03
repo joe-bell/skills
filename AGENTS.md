@@ -21,7 +21,9 @@ node --test tests/apple-web-app-snippets.test.mjs
 ```
 
 CI (`.github/workflows/ci.yml`) runs the same three commands on every pull
-request, and the `main` ruleset requires that `check` job.
+request, and the `main` ruleset requires that `check` job. CI sets
+`NPM_CONFIG_MIN_RELEASE_AGE=7`, so `npx` skips any release younger than seven
+days; pin a tool only to a version at least that old.
 
 Fix formatting with `npx prettier@3.9.9 --write .`. Code fences are left as
 written (`embeddedLanguageFormatting: off` in `.prettierrc`).
