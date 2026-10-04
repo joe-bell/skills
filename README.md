@@ -26,7 +26,7 @@ npx skills@latest add joe-bell/skills
 npx skills@latest add joe-bell/skills --skill apple-web-app
 ```
 
-### Zip upload (Claude and ChatGPT apps)
+### `.zip`
 
 Apps such as Claude and ChatGPT install a skill from an uploaded zip instead of
 the command line. On macOS, this builds one in the current folder; set `s` to
