@@ -29,6 +29,7 @@ npx skills@latest add joe-bell/skills --skill apple-web-app
 ## Reference
 
 - [**apple-web-app**](./skills/apple-web-app/SKILL.md) — Building websites and web apps that work well on iOS, iPadOS and macOS Safari
+- [**elron**](./skills/elron/SKILL.md) — Checking Estonian train times, live delays and Elron farecard balances
 - [**letterboxd-diary**](./skills/letterboxd-diary/SKILL.md) — Fetching recently watched films from a Letterboxd diary
 
 ## License
