@@ -43,6 +43,7 @@ Then upload `apple-web-app.zip` in the app's skill settings.
 - [**apple-web-app**](./skills/apple-web-app/SKILL.md) — Building websites and web apps that work well on iOS, iPadOS and macOS Safari
 - [**elron**](./skills/elron/SKILL.md) — Checking Estonian train times, live delays and Elron farecard balances
 - [**letterboxd-diary**](./skills/letterboxd-diary/SKILL.md) — Fetching recently watched films from a Letterboxd diary
+- [**papercuts**](./skills/papercuts/SKILL.md) — Logging the small frictions agents hit in a repository and fixing them in batches
 
 ## License
 
