@@ -44,9 +44,18 @@ and bottom edges separately:
    not over the pixels actually beneath it. So is a dimming layer: a fixed
    element covering at least 90% of the viewport both ways, with a translucent
    background and no children.
-6. With nothing qualifying, the bar is the page background: `<body>`'s
-   `background-color` (it won over `<html>`'s with both set); `<html>`'s, then
-   white or black, when `<body>` is transparent.
+6. With nothing qualifying, Safari paints no tint: page content scrolls
+   visibly under the status bar and the address bar. The page background —
+   `<body>`'s `background-color` (it won over `<html>`'s with both set);
+   `<html>`'s, then white or black, when `<body>` is transparent — shows only
+   where there is no document under the bar: above it at scroll 0, below it at
+   the end of the page, and in overscroll. "Page background" elsewhere in this
+   file means this fallback; those results came from plain or short pages,
+   where content and body colour matched. A short page that never scrolls
+   under a bar keeps that bar the page background, which is why an absolute
+   dim (item 1) leaves both bars undimmed. Source: Joe Bell (iOS Simulator
+   26.5 23F77, 2026-10-15; Simulator only); Kevin Clark's demo, in
+   [sources.md](sources.md).
 7. A full-viewport overlay keeps the edge's existing colour when one is already
    set. A dialog opened over a page whose sticky header tints the top leaves
    the status bar at the header's colour above the dimmed page.
@@ -95,6 +104,25 @@ but was not tried on the device. No iOS 26 device was checked.
   candidate, so it replaces the stored colour. The status bar then shows the dim
   over the page background, not over the header; give the strip the header colour with the
   dim already applied, opaque, if the two must match.
+- **A full-screen fixed gradient turns both bars solid.** A decorative
+  `position: fixed; inset: 0` layer painted with `background-image` has a
+  transparent `background-color`, so it is hit and blended over the page
+  background (item 5): both bars become the page background colour and the
+  gradient never reaches them. This is the usual cause of "my gradient doesn't
+  reach the bars". Put full-width fixed edge strips above it (recipe E).
+  Source: Joe Bell (iOS Simulator 26.5 23F77, 2026-10-15; Simulator only).
+- **Different `<html>` and `<body>` backgrounds leave a hairline.** A 1px line
+  of the `<html>` colour showed at the document's bottom edge at the end of
+  the page and mid-bounce. Colouring only `<body>` removed it. Source: Joe Bell
+  (iOS Simulator 26.5 23F77, 2026-10-15; Simulator only).
+- **An edge strip revealed only at the end of the page sticks.** A bottom strip
+  faded in by scroll (opacity 0 → 1) or translated in from off-screen fixed
+  the end of the page, but once it had been sampled the address bar kept its
+  colour mid-page and content no longer showed under it. The opacity case is
+  item 9 (below 0.1 the strip is skipped and ends the search); the translated
+  strip is no longer hit at all, yet the bar kept the colour. Keep the strip
+  in place from the start and change its colour instead (recipe E). Source:
+  Joe Bell (iOS Simulator 26.5 23F77, 2026-10-15; Simulator only).
 - `display: none` remains the safe way to park an overlay. `opacity` below 0.1
   and `visibility: hidden` are skipped in the source, and `opacity: 0.05` was
   skipped on iOS 27.0, but Frain observed `opacity: 0` sampled earlier in 26.x.
@@ -131,8 +159,7 @@ Give the status-bar strip its own blurred layer, so content scrolling under it
 stays legible:
 
 ```css
-body::before {
-  content: "";
+.status-blur {
   position: fixed;
   inset: 0 0 auto 0;
   height: env(safe-area-inset-top);
@@ -143,8 +170,15 @@ body::before {
 }
 ```
 
-Source: Daniel Pietzsch. Note this element also becomes the sampling target —
-which is usually what you want.
+```html
+<div class="status-blur" aria-hidden="true"></div>
+```
+
+Source: Daniel Pietzsch, who used `body::before`. Use a real element: a fixed
+full-width `body::before` or `::after` strip was not sampled, and the bar fell
+back to the page background, while a `<div>` with identical CSS was sampled.
+A pseudo-element on an element that is itself fixed was not tried. Source:
+Joe Bell (iOS Simulator 26.5 23F77, 2026-10-15; Simulator only).
 
 For a softer result, stack several `backdrop-filter` layers with increasing blur
 radii and gradient masks (a "progressive blur") rather than one hard edge.
@@ -201,6 +235,73 @@ be the element sampling finds:
 Source: WebKit; Joe Bell (iOS Simulator 26.5 23F77 and 27.0 24A434,
 2026-09-22; verified iPhone 17 Pro, iOS 27.0, 2026-09-23), in
 [sources.md](sources.md).
+
+### E. Scroll-changing top and bottom colours over a fixed background
+
+A fixed full-screen background never reaches the bars by itself (Pitfalls).
+Put a full-width fixed strip at each edge, coloured from registered custom
+properties that a scroll-driven animation changes; Safari samples the strips,
+so both bars follow the scroll with no JavaScript:
+
+```html
+<style>
+  @property --top    { syntax: "<color>"; inherits: true; initial-value: #c98a5a; }
+  @property --bottom { syntax: "<color>"; inherits: true; initial-value: #b4603a; }
+  @keyframes edges {
+    0%   { --top: #c98a5a; --bottom: #b4603a; }
+    50%  { --top: #b4603a; --bottom: #6e2a24; }
+    100% { --top: #6e2a24; --bottom: #2a1512; }
+  }
+  :root {
+    --edge-top: max(12px, env(safe-area-inset-top));
+    --edge-bottom: max(12px, env(safe-area-inset-bottom));
+    --fade: 96px;
+    --gutter: calc(var(--fade) / 0.75);
+    animation: edges linear both;
+    animation-timeline: scroll(root);
+  }
+  body { margin: 0; background-color: var(--bottom); }
+  .scene { position: fixed; inset: 0; background: linear-gradient(var(--top), var(--bottom)); }
+  .edge, .fade { position: fixed; left: 0; right: 0; z-index: 10; pointer-events: none; }
+  .edge-top    { top: 0;    height: var(--edge-top);    background-color: var(--top); }
+  .edge-bottom { bottom: 0; height: var(--edge-bottom); background-color: var(--bottom); }
+  .fade { height: var(--fade); }
+  .fade-top    { top: var(--edge-top);       background: linear-gradient(var(--top), transparent); }
+  .fade-bottom { bottom: var(--edge-bottom); background: linear-gradient(transparent, var(--bottom)); }
+  main { position: relative; padding: calc(var(--edge-top) + var(--gutter)) 24px calc(var(--edge-bottom) + var(--gutter)); }
+</style>
+<div class="scene" aria-hidden="true"></div>
+<div class="edge edge-top" aria-hidden="true"></div>
+<div class="fade fade-top" aria-hidden="true"></div>
+<div class="fade fade-bottom" aria-hidden="true"></div>
+<div class="edge edge-bottom" aria-hidden="true"></div>
+<main>…</main>
+```
+
+- The strips are what Safari samples: they sit above `.scene` at both edge
+  centres, are more than 10px deep, and use an opaque `background-color`.
+- Each fade starts where its strip ends, so the hit point 4px inside the edge
+  lands on the strip, never on a gradient with a transparent
+  `background-color`.
+- Only `<body>` is coloured, which avoids the `<html>` hairline, and its colour
+  tracks the bottom strip so overscroll matches.
+- The strips stay in place for the whole scroll; only their colour changes.
+- Updating `--top` and `--bottom` from a registered `@property` with
+  `animation-timeline: scroll(root)` changed both bars in the Simulator and on
+  an iPhone.
+- On fast flings the status bar can keep the previous colour for a frame or
+  two while the strip has moved on, leaving a faint edge; still open in
+  [ios-26-notes.md](ios-26-notes.md).
+
+Design preference, not platform behaviour: the fades soften where content is
+cut off under each strip. On an iPhone a linear 96px fade read best, against
+in-out-quad (54, 72 and 96px), in-out-cubic (96px) and out-cubic (54px). The
+content gutter is the fade divided by 0.75, so the fade covers three quarters
+of it and never sits over text at rest.
+
+Source: Joe Bell and Josh Puckett, building on Puckett's edge-strip technique;
+Joe Bell (iOS Simulator 26.5 23F77, 2026-10-15; an iPhone, Safari tab,
+2026-10-15, iOS build not recorded), in [sources.md](sources.md).
 
 ## macOS
 
