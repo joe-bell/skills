@@ -287,21 +287,18 @@ so both bars follow the scroll with no JavaScript:
   tracks the bottom strip so overscroll matches.
 - The strips stay in place for the whole scroll; only their colour changes.
 - Updating `--top` and `--bottom` from a registered `@property` with
-  `animation-timeline: scroll(root)` changed both bars in the Simulator and on
-  an iPhone.
+  `animation-timeline: scroll(root)` changed both bars in the Simulator and on an iPhone 17 with iOS 27.0.1.
 - On fast flings the status bar can keep the previous colour for a frame or
   two while the strip has moved on, leaving a faint edge; still open in
   [ios-26-notes.md](ios-26-notes.md).
 
 Design preference, not platform behaviour: the fades soften where content is
-cut off under each strip. On an iPhone a linear 96px fade read best, against
+cut off under each strip. On an iPhone 17 a linear 96px fade read best, against
 in-out-quad (54, 72 and 96px), in-out-cubic (96px) and out-cubic (54px). The
 content gutter is the fade divided by 0.75, so the fade covers three quarters
 of it and never sits over text at rest.
 
-Source: Joe Bell and Josh Puckett, building on Puckett's edge-strip technique;
-Joe Bell (iOS Simulator 26.5 23F77, 2026-10-15; an iPhone, Safari tab,
-2026-10-15, iOS build not recorded), in [sources.md](sources.md).
+Source: Joe Bell and Josh Puckett, from Puckett's edge-strip technique and demo, with the fade suggested by Joe Bell; Joe Bell (iOS Simulator 26.5 23F77, 2026-10-15; iPhone 17, iOS 27.0.1, Safari tab, 2026-10-15), in [sources.md](sources.md).
 
 ## macOS
 

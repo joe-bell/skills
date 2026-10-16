@@ -84,15 +84,13 @@ Source: Firtman; WebKit, retained historical guidance in
   fling leaves the status bar on the previous colour for a frame or two while
   the strip has already changed, so a faint edge shows. Delaying the page
   colours (a JavaScript-set value with a 150, 250 or 400ms CSS transition)
-  looked no better than no delay. No fix found. Source: Joe Bell (an iPhone,
-  Safari tab, 2026-10-15, iOS build not recorded), in
+  looked no better than no delay. No fix found. Source: Joe Bell (iPhone 17, iOS 27.0.1, Safari tab, 2026-10-15), in
   [sources.md](sources.md).
 - **Caution: normal-flow gradient pages differ on device.** A tall normal-flow
   gradient with a scroll-driven `<body>` colour, and no fixed elements or edge
-  strips, looked seamless in the iOS 26.5 Simulator but worse on an iPhone.
+  strips, looked seamless in the iOS 26.5 Simulator but worse on an iPhone 17 with iOS 27.0.1.
   The cause was not identified; check this approach on a device before relying
-  on it. Source: Joe Bell (iOS Simulator 26.5 23F77 and an iPhone, Safari tab,
-  2026-10-15, iOS build not recorded), in [sources.md](sources.md).
+  on it. Source: Joe Bell (iOS Simulator 26.5 23F77, 2026-10-15; iPhone 17, iOS 27.0.1, Safari tab, 2026-10-15), in [sources.md](sources.md).
 
 Startup-image selection and refresh questions are tracked in
 [splash-screens.md](splash-screens.md). These remain unverified; that work queue
