@@ -49,6 +49,21 @@ Format: **Author — Title (date) — URL** — what this skill took from it.
   `A: empty transparent full-screen pointer-events:auto layer over the dim → page background (device); with an empty ::before → both bars dimmed (device)`;
   `A: same layer added after the dim → both bars stay dimmed; pointer-events:none layer over a pointer-events:auto dim → both bars dimmed`;
   `A: text field focused in a dialog or bottom sheet near the keyboard → compact address bar floats above the keyboard and covers the footer (Simulator only)`.
+  Edge-colour runs on 2026-10-15 in the iOS 26.5 Simulator (23F77), iPhone 17
+  Pro, Safari tab:
+  `A: no fixed or sticky element at an edge centre → content scrolls under both bars; <body> colour only above the document at scroll 0, below it at the end, and in overscroll`;
+  `A: fixed inset-0 gradient layer, transparent background-color → both bars solid page background`;
+  `A: fixed full-width body::before / ::after strips → not sampled, page background; <div> strips, same CSS → sampled`;
+  `A: <html> and <body> backgrounds different → 1px <html>-colour line at the document's bottom edge (end of page, mid-bounce); <body> only → none`;
+  `A: bottom strip faded in by scroll (opacity 0 → 1) or translated in from off-screen → end of page tinted, then address bar keeps that colour mid-page and content no longer shows under it`;
+  `A: strip colours from registered @property <color> values animated with animation-timeline: scroll(root) → both bars follow, no JavaScript`;
+  `A: tall normal-flow gradient, scroll-driven <body> colour, no fixed elements → seamless`.
+  Device runs on 2026-10-15 on an iPhone 17 with iOS 27.0.1, Safari tab (screen recording and hands-on):
+  `A: @property strip colours animated by scroll(root) → both bars follow`;
+  `A: fast fling → status bar keeps the previous colour for a frame or two, faint edge; JavaScript-set colour with 150/250/400ms transition → no better`;
+  `A: tall normal-flow gradient, scroll-driven <body> colour → worse than in the Simulator, cause not identified`;
+  `A: fade below each strip (design preference) → linear 96px read best against in-out-quad 54/72/96px, in-out-cubic 96px, out-cubic 54px`.
+  The scroll-changing edge-colour recipe was built with Josh Puckett, from his edge-strip technique.
 - **Joe Bell — a production Tailwind v4 app (2025, private)** — the Tailwind
   v4 reference's spellings come from the same production app.
 - **Tailwind CSS — v4 documentation (`@utility`, `@custom-variant`, `--value()`)** —
@@ -135,6 +150,12 @@ documentation; thresholds are approximate.
   https://jahir.dev/blog/safari-toolbar — sampling thresholds (width ≥ ~80%,
   height ≥ ~3px, within ~4px of the top / ~3px of the bottom) and the
   `<body>` → `<html>` → white/black fallback chain.
+- **Josh Puckett — "Seamless Backgrounds on Mobile Safari" (2026-10)** —
+  https://joshpuckett.me/seamless-mobile-safari — the full-width fixed edge-strip technique for colouring Safari's bars over a fixed background, and the interactive demo embedded in the article, which also credits Joe Bell with the fade below each strip; co-author with Joe Bell of the scroll-changing edge-colour recipe.
+- **Kevin Clark — edge-colour demo (2026-10-15)** —
+  https://josh-is-wrong.vernalkick.chatgpt.site/ — the counter-example with
+  no fixed element at either edge, showing page content drawn under both
+  bars.
 - **Ben Nasedkin — "iOS 26 Safari toolbar colors"** —
   https://nasedk.in/blog/ios26-safari-toolbar-colors/ — corroboration of the
   fallback chain.

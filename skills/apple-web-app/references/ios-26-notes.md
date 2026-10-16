@@ -78,6 +78,19 @@ Source: Firtman; WebKit, retained historical guidance in
   excludes it, and how to keep content clear of it. Source: Joe Bell (iOS
   Simulator 26.5 23F77, 2026-09-23; Simulator only), in
   [sources.md](sources.md).
+- **Status bar lags scroll-driven edge colours (open).** With fixed edge strips
+  whose colour changes on scroll (recipe E in
+  [theme-color-and-status-bar.md](theme-color-and-status-bar.md)), a fast
+  fling leaves the status bar on the previous colour for a frame or two while
+  the strip has already changed, so a faint edge shows. Delaying the page
+  colours (a JavaScript-set value with a 150, 250 or 400ms CSS transition)
+  looked no better than no delay. No fix found. Source: Joe Bell (iPhone 17, iOS 27.0.1, Safari tab, 2026-10-15), in
+  [sources.md](sources.md).
+- **Caution: normal-flow gradient pages differ on device.** A tall normal-flow
+  gradient with a scroll-driven `<body>` colour, and no fixed elements or edge
+  strips, looked seamless in the iOS 26.5 Simulator but worse on an iPhone 17 with iOS 27.0.1.
+  The cause was not identified; check this approach on a device before relying
+  on it. Source: Joe Bell (iOS Simulator 26.5 23F77, 2026-10-15; iPhone 17, iOS 27.0.1, Safari tab, 2026-10-15), in [sources.md](sources.md).
 
 Startup-image selection and refresh questions are tracked in
 [splash-screens.md](splash-screens.md). These remain unverified; that work queue
@@ -132,6 +145,8 @@ exposes a computed value, not proof that future layout changes are over. See
 | Dialog dims the page but not Safari's bars                      | Paint the dim `position: fixed`; keep narrow fixed UI off the edge centre    | WebKit; Joe Bell                       |
 | Dialog over a sticky header leaves the status bar bright        | Full-width fixed edge strip with the dim colour while open                   | WebKit; Joe Bell                       |
 | Transparent backdrop over a separate dim leaves the bars bright | Give it an empty `::after { content: "" }`                                   | WebKit; Joe Bell                       |
+| Fixed full-screen gradient doesn't reach the bars               | Full-width fixed edge strips above it, coloured on scroll                    | Joe Bell; Puckett                      |
+| 1px line at the page's bottom edge                              | Colour `<body>` only, not `<html>` as well                                   | Joe Bell                               |
 | Status bar opaque, top inset `0px` (26.1; back on 26.5.2)       | Layout must be valid at inset `0px`; fixed in 26.2, re-regressed later       | WebKit 301994                          |
 | Rubber-banding behind fixed bars                                | `overscroll-behavior-y: contain` in a stylesheet                             | React Spectrum PR #8888                |
 | Keyboard covers focused field                                   | `visualViewport` height variable + manual scroll                             | React Spectrum                         |
