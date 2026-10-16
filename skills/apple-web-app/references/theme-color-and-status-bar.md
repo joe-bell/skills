@@ -284,7 +284,9 @@ so both bars follow the scroll with no JavaScript:
   lands on the strip, never on a gradient with a transparent
   `background-color`.
 - Only `<body>` is coloured, which avoids the `<html>` hairline, and its colour
-  tracks the bottom strip so overscroll matches.
+  tracks the bottom strip so overscroll at the bottom matches. Overscroll at
+  the top shows the same `--bottom` colour above the document (item 6), not
+  `--top`; top overscroll was not tested.
 - The strips stay in place for the whole scroll; only their colour changes.
 - Updating `--top` and `--bottom` from a registered `@property` with
   `animation-timeline: scroll(root)` changed both bars in the Simulator and on an iPhone 17 with iOS 27.0.1.
