@@ -29,6 +29,6 @@ jobs:
         with:
           node-version: 24
       - parallel:
-          - run: npx --yes prettier@3.9.9 --check .
+          - run: npx --yes prettier@3.10.1 --check .
           - run: npx --yes skill-check@1.2.0 check ./skills --no-security-scan --strict
           - run: node --test tests/apple-web-app-snippets.test.mjs

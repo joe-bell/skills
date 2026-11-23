@@ -5,7 +5,7 @@
 # - `cooldown` skips releases younger than seven days, a buffer against
 #   compromised or quickly yanked releases.
 # - `rebase-strategy: disabled` stops Dependabot rebasing the pull request
-#   after every merge to `main`; on a conflict, comment `@dependabot rebase`.
+#   after every merge to `main`; on a conflict, comment `@dependabot recreate`.
 version: 2
 updates:
   - package-ecosystem: github-actions

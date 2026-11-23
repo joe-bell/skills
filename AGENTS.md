@@ -15,7 +15,7 @@ Conventions for agents editing this skills repository.
 Before every commit, run:
 
 ```sh
-npx prettier@3.9.9 --check .
+npx prettier@3.10.1 --check .
 npx skill-check@1.2.0 check ./skills --no-security-scan --strict
 node --test tests/apple-web-app-snippets.test.mjs
 ```
@@ -25,7 +25,7 @@ request, and the `main` ruleset requires that `check` job. CI sets
 `NPM_CONFIG_MIN_RELEASE_AGE=7`, so `npx` skips any release younger than seven
 days; pin a tool only to a version at least that old.
 
-Fix formatting with `npx prettier@3.9.9 --write .`. Code fences are left as
+Fix formatting with `npx prettier@3.10.1 --write .`. Code fences are left as
 written (`embeddedLanguageFormatting: off` in `.prettierrc`).
 
 - A skill body must stay within 500 lines and 5,000 words.
